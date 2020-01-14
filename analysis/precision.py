@@ -1,8 +1,8 @@
 from helper import *
-import pandas as pd
 from statistics import mean
 import csv
 import matplotlib.pyplot as plt
+
 
 def sMAPE(predicted, actual):
     """
@@ -41,4 +41,4 @@ def get_sMAPE_for_timesteps(resolution):
     plt.show()
 
 
-get_sMAPE_for_timesteps("Weekly")
+get_sMAPE_for_timesteps("Hourly")

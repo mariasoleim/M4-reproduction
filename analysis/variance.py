@@ -1,10 +1,7 @@
-import pandas as pd
 import csv
 from statistics import mean, pstdev
 import matplotlib.pyplot as plt
-from helper import resolutions, resolution_count, horizon
-
-
+from helper import *
 
 
 def average_and_standard_deviation(resolution):
@@ -66,5 +63,5 @@ def coefficient_of_variation_each_timestep(resolution):
     plt.savefig("../reproduced-results/analysis-results/" + resolution + "/coefficient_of_variation.png")
     plt.show()
 
-
+average_and_standard_deviation("Weekly")
 coefficient_of_variation_each_timestep("Weekly")

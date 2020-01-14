@@ -8,7 +8,7 @@ resolution_count = {
     "Monthly": 48000,
     "Weekly": 359,
     "Daily": 4227,
-    "Hourly:": 414,
+    "Hourly": 414,
     "Total": 100000
 }
 
@@ -18,7 +18,7 @@ horizon = {
     "Monthly": 18,
     "Weekly": 13,
     "Daily": 14,
-    "Hourly:": 48
+    "Hourly": 48
 }
 
 
@@ -63,5 +63,4 @@ def get_real_value(resolution, time_series_id, number_in_horizon):
     series = test.loc[time_series_id].tolist()
     target = series[number_in_horizon - 1]
     return target
-
 
