@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 for resolution in resolutions:
     path = "../reproduced-results/analysis-results/" + resolution + "/average_coefficient_of_variation.csv"
-    x_axis = linspace(1, 48, 48)
     if Path(path).is_file():
         with open(path) as file:
             coefficients = [float(i) for i in file.readline().split(",")]
