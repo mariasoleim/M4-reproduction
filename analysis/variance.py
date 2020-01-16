@@ -57,11 +57,12 @@ def coefficient_of_variation_each_timestep(resolution):
         writer = csv.writer(file, delimiter=',')
         writer.writerow(averages)
 
-    plt.plot(range(1, horizon[resolution] + 1), averages)
+    plt.plot(range(1, horizon[resolution] + 1), averages, label=resolution)
     plt.xlabel("Timestep after last observed value")
     plt.ylabel("Average coefficient of variation")
+    plt.legend(loc='best')
     plt.savefig("../reproduced-results/analysis-results/" + resolution + "/coefficient_of_variation.png")
     plt.show()
 
-average_and_standard_deviation("Weekly")
-coefficient_of_variation_each_timestep("Weekly")
+average_and_standard_deviation("Daily")
+coefficient_of_variation_each_timestep("Daily")

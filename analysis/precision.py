@@ -34,11 +34,12 @@ def get_sMAPE_for_timesteps(resolution):
         writer = csv.writer(file, delimiter=',')
         writer.writerow(average_sMAPEs_for_timesteps)
 
-    plt.plot(range(1, horizon[resolution] + 1), average_sMAPEs_for_timesteps)
+    plt.plot(range(1, horizon[resolution] + 1), average_sMAPEs_for_timesteps, label=resolution)
     plt.xlabel("Timestep after last observed value")
     plt.ylabel("Average sMAPE")
+    plt.legend(loc='best')
     plt.savefig("../reproduced-results/analysis-results/" + resolution + "/sMAPE")
     plt.show()
 
 
-get_sMAPE_for_timesteps("Hourly")
+get_sMAPE_for_timesteps("Daily")
