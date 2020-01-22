@@ -18,6 +18,7 @@ def get_sMAPE_for_timesteps(resolution):
         raise Exception("This is not a valid resolution")
     average_sMAPEs_for_timesteps = []
     for timestep_in_horizon in range(1, horizon[resolution] + 1):
+        print(str(timestep_in_horizon) + " / " + str(horizon[resolution] + 1))
         sMAPEs_for_timestep = []
         for series_count in range(1, resolution_count[resolution] + 1):
             series_id = resolution[0] + str(series_count)
@@ -29,7 +30,7 @@ def get_sMAPE_for_timesteps(resolution):
         average_sMAPE_this_timestep = mean(sMAPEs_for_timestep)
         average_sMAPEs_for_timesteps.append(average_sMAPE_this_timestep)
 
-    with open("../reproduced-results/analysis-results/" + resolution + "/average_sMAPE.csv", "w") \
+    with open("../results/" + resolution + "/average_sMAPE.csv", "w") \
             as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerow(average_sMAPEs_for_timesteps)
@@ -42,4 +43,4 @@ def get_sMAPE_for_timesteps(resolution):
     plt.show()
 
 
-get_sMAPE_for_timesteps("Daily")
+get_sMAPE_for_timesteps("Monthly")

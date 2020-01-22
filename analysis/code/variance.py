@@ -11,6 +11,7 @@ def average_and_standard_deviation(resolution):
     if resolution not in resolutions:
         raise Exception("This is not a valid resolution")
     for series_count in range(1, resolution_count[resolution] + 1):
+        print(str(series_count) + " / " + str(resolution_count[resolution] + 1))
         series_id = resolution[0] + str(series_count)
         averages_for_series = [series_id]
         standard_deviations_for_series = [series_id]

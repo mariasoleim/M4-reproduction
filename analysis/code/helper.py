@@ -48,7 +48,7 @@ def get_predicted_values(resolution, time_series_id, number_in_horizon):
 
     values = []
     for rerun_id in range(1, 6):
-        path_to_results = "../reproduced-results/rerun-" + str(rerun_id) + "/" + resolution + "Forec.csv"
+        path_to_results = "../../forecasts/rerun-" + str(rerun_id) + "/" + resolution + "Forec.csv"
         with open(path_to_results) as results:
             for line in results:
                 line = line.split(",")
@@ -59,7 +59,7 @@ def get_predicted_values(resolution, time_series_id, number_in_horizon):
 
 
 def get_real_value(resolution, time_series_id, number_in_horizon):
-    test = pd.read_csv("../data/test/" + resolution + "-test.csv", index_col=0)
+    test = pd.read_csv("../../data/test/" + resolution + "-test.csv", index_col=0)
     series = test.loc[time_series_id].tolist()
     target = series[number_in_horizon - 1]
     return target
