@@ -5,6 +5,8 @@ from helper import *
 
 
 def average_and_standard_deviation(submission_id, resolution):
+    if isinstance(submission_id, int):
+        submission_id = str(submission_id)
     averages = []
     standard_deviations = []
     coefficients_of_variation = []
@@ -28,17 +30,17 @@ def average_and_standard_deviation(submission_id, resolution):
         standard_deviations.append(standard_deviations_for_series)
         coefficients_of_variation.append(coefficients_of_variation_for_series)
 
-    with open("../results/" + resolution + "/averages.csv", "w") as file:
+    with open("../results/" + submission_id + "/" + resolution + "/averages.csv", "w") as file:
         writer = csv.writer(file, delimiter=',')
         for row in averages:
             writer.writerow(row)
 
-    with open("../results/" + resolution + "/standard-deviations.csv", "w") as file:
+    with open("../results/" + submission_id + "/" + resolution + "/standard-deviations.csv", "w") as file:
         writer = csv.writer(file, delimiter=',')
         for row in standard_deviations:
             writer.writerow(row)
 
-    with open("../results/" + resolution + "/coefficients_of_variation.csv", "w") as file:
+    with open("../results/" + submission_id + "/" + resolution + "/coefficients_of_variation.csv", "w") as file:
         writer = csv.writer(file, delimiter=',')
         for row in coefficients_of_variation:
             writer.writerow(row)
@@ -46,7 +48,7 @@ def average_and_standard_deviation(submission_id, resolution):
 
 def coefficient_of_variation_each_timestep(submission_id, resolution):
     if isinstance(submission_id, int):
-        str(submission_id)
+        submission_id = str(submission_id)
     coefficients = pd.read_csv("../results/" + submission_id + "/" + resolution +
                                "/coefficients_of_variation.csv", header=None, index_col=0)
     averages = []
@@ -55,7 +57,7 @@ def coefficient_of_variation_each_timestep(submission_id, resolution):
         average = mean(coefficients_at_step)
         averages.append(average)
 
-    with open("../results/" + resolution + "/average_coefficient_of_variation.csv", "w") \
+    with open("../results/" + submission_id + "/" + resolution + "/average_coefficient_of_variation.csv", "w") \
             as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerow(averages)
@@ -64,8 +66,8 @@ def coefficient_of_variation_each_timestep(submission_id, resolution):
     plt.xlabel("Timestep after last observed value")
     plt.ylabel("Average coefficient of variation")
     plt.legend(loc='best')
-    plt.savefig("../results/" + resolution + "/coefficient_of_variation.png")
+    plt.savefig("../results/" + submission_id + "/" + resolution + "/coefficient_of_variation.png")
     plt.show()
 
-average_and_standard_deviation(237, "Monthly")
-coefficient_of_variation_each_timestep(237, "Monthly")
+average_and_standard_deviation(237, "Weekly")
+coefficient_of_variation_each_timestep(237, "Weekly")
