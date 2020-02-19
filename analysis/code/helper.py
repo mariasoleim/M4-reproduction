@@ -1,5 +1,5 @@
 import pandas as pd
-
+import os
 
 resolutions = ["Yearly", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly"]
 
@@ -68,3 +68,8 @@ def get_real_value(resolution, time_series_id, number_in_horizon):
     series = test.loc[time_series_id].tolist()
     target = series[number_in_horizon - 1]
     return target
+
+
+def create_path_if_not_exists(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)

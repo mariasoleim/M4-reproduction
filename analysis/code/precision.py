@@ -32,7 +32,9 @@ def get_sMAPE_for_timesteps(submission_id, resolution):
         average_sMAPE_this_timestep = mean(sMAPEs_for_timestep)
         average_sMAPEs_for_timesteps.append(average_sMAPE_this_timestep)
 
-    with open("../results/" + submission_id + "/" + resolution + "/average_sMAPE.csv", "w") \
+    path_to_folder = "../results/" + submission_id + "/" + resolution
+    create_path_if_not_exists(path_to_folder)
+    with open(path_to_folder + "/average_sMAPE.csv", "w") \
             as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerow(average_sMAPEs_for_timesteps)
