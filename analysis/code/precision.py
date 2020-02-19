@@ -13,7 +13,9 @@ def sMAPE(predicted, actual):
     return 200.0 * abs((actual - predicted)) / (abs(actual) + abs(predicted))
 
 
-def get_sMAPE_for_timesteps(resolution):
+def get_sMAPE_for_timesteps(submission_id, resolution):
+    if isinstance(submission_id, int):
+        submission_id = str(submission_id)
     if resolution not in resolutions:
         raise Exception("This is not a valid resolution")
     average_sMAPEs_for_timesteps = []
@@ -22,7 +24,7 @@ def get_sMAPE_for_timesteps(resolution):
         sMAPEs_for_timestep = []
         for series_count in range(1, resolution_count[resolution] + 1):
             series_id = resolution[0] + str(series_count)
-            predicted_values = get_predicted_values(resolution, series_id, timestep_in_horizon)
+            predicted_values = get_predicted_values(submission_id, resolution, series_id, timestep_in_horizon)
             real_value = get_real_value(resolution, series_id, timestep_in_horizon)
             for prediction in predicted_values:
                 sMAPE_value = sMAPE(prediction, real_value)
@@ -30,7 +32,7 @@ def get_sMAPE_for_timesteps(resolution):
         average_sMAPE_this_timestep = mean(sMAPEs_for_timestep)
         average_sMAPEs_for_timesteps.append(average_sMAPE_this_timestep)
 
-    with open("../results/" + resolution + "/average_sMAPE.csv", "w") \
+    with open("../results/" + submission_id + "/" + resolution + "/average_sMAPE.csv", "w") \
             as file:
         writer = csv.writer(file, delimiter=',')
         writer.writerow(average_sMAPEs_for_timesteps)
@@ -39,8 +41,8 @@ def get_sMAPE_for_timesteps(resolution):
     plt.xlabel("Timestep after last observed value")
     plt.ylabel("Average sMAPE")
     plt.legend(loc='best')
-    plt.savefig("../reproduced-results/analysis-results/" + resolution + "/sMAPE")
+    plt.savefig("../results/" + submission_id + "/" + resolution + "/sMAPE")
     plt.show()
 
 
-get_sMAPE_for_timesteps("Monthly")
+get_sMAPE_for_timesteps(237, "Weekly")

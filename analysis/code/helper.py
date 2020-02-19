@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 resolutions = ["Yearly", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly"]
 
 resolution_count = {
@@ -33,22 +34,26 @@ def remove_quotes_if_any(word):
     return out_word
 
 
-def get_predicted_values(resolution, time_series_id, number_in_horizon):
+def get_predicted_values(submission_id, resolution, time_series_id, number_in_horizon):
     """
     Get all the predicted values with a specific resolution, time series id a certain number,
     number_in_horizon, after the last observed value
+    :param submission_id: A string or an integer giving the id of the submission in the M4 competition
     :param resolution: A string, either "Yearly", "Quarterly", "Monthly", "Weekly", "Daily" or "Hourly"
     :param time_series_id: A string with the id of the series in which the average should be calculated
     :param number_in_horizon: An integer, the specific timestep succeeding the last observed value. E.g. a number in the
     range 1-13 for weekly series.
     :return:
     """
+    if isinstance(submission_id, int):
+        submission_id = str(submission_id)
+
     if resolution not in resolutions:
         raise Exception("This is not a valid resolution")
 
     values = []
     for rerun_id in range(1, 6):
-        path_to_results = "../../forecasts/rerun-" + str(rerun_id) + "/" + resolution + "Forec.csv"
+        path_to_results = "../../forecasts/" + submission_id + "/rerun-" + str(rerun_id) + "/" + resolution + "Forec.csv"
         with open(path_to_results) as results:
             for line in results:
                 line = line.split(",")
@@ -63,4 +68,3 @@ def get_real_value(resolution, time_series_id, number_in_horizon):
     series = test.loc[time_series_id].tolist()
     target = series[number_in_horizon - 1]
     return target
-
