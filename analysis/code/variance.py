@@ -13,7 +13,7 @@ def average_and_standard_deviation(submission_id, resolution):
     if resolution not in resolutions:
         raise Exception("This is not a valid resolution")
     for series_count in range(1, resolution_count[resolution] + 1):
-        print(str(series_count) + " / " + str(resolution_count[resolution] + 1))
+        print(str(series_count) + " / " + str(resolution_count[resolution]))
         series_id = resolution[0] + str(series_count)
         averages_for_series = [series_id]
         standard_deviations_for_series = [series_id]
@@ -81,5 +81,5 @@ def coefficient_of_variation_each_timestep(submission_id, resolution):
     plt.savefig("../results/" + submission_id + "/" + resolution + "/coefficient_of_variation.png")
     plt.show()
 
-average_and_standard_deviation(237, "Yearly")
-coefficient_of_variation_each_timestep(237, "Yearly")
+average_and_standard_deviation(237, "Daily")
+coefficient_of_variation_each_timestep(237, "Daily")
