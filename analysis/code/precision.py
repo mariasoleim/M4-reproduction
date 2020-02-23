@@ -20,7 +20,7 @@ def get_sMAPE_for_timesteps(submission_id, resolution):
         raise Exception("This is not a valid resolution")
     average_sMAPEs_for_timesteps = []
     for timestep_in_horizon in range(1, horizon[resolution] + 1):
-        print(str(timestep_in_horizon) + " / " + str(horizon[resolution] + 1))
+        print(str(timestep_in_horizon) + " / " + str(horizon[resolution])
         sMAPEs_for_timestep = []
         for series_count in range(1, resolution_count[resolution] + 1):
             series_id = resolution[0] + str(series_count)
@@ -47,4 +47,4 @@ def get_sMAPE_for_timesteps(submission_id, resolution):
     plt.show()
 
 
-get_sMAPE_for_timesteps(237, "Weekly")
+get_sMAPE_for_timesteps(237, "Yearly")
