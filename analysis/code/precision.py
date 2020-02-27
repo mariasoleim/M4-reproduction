@@ -1,8 +1,7 @@
 from helper import *
-from statistics import mean
 import csv
 import matplotlib.pyplot as plt
-import pandas as pd
+import numpy as np
 
 
 def sMAPE(value_1, value_2):
@@ -54,51 +53,118 @@ def compare_results(file_1, file_2, output_path):
         writer.writerow(sMAPEs)
 
 
-compare_results("../../forecasts/118/rerun-1/forecast.csv", "../../forecasts/118/rerun-2/forecast.csv",
-                "../../forecasts/118/comparison-delete.csv")
+def get_average_sMAPE(path):
+    """
+    Given the path to a file with one sMAPE value for each forecasted value for each time series, like the one
+    generated in compare_results. Gives the average of all those values.
+    :param path: string, path to file
+    :return:
+    """
+    reader = csv.reader(open(path))
+
+    # Skip header line
+    next(reader)
+
+    # Create variable to keep track of the sum
+    sum = 0
+
+    # Create variable to keep track of number of values
+    number_of_values = 0
+
+    for series_forecast in reader:
+        sMAPEs = [float(i) for i in series_forecast[1:] if i != "NA" or i != ""]
+        for sMAPE in sMAPEs:
+            sum += sMAPE
+            number_of_values += 1
+
+    average_sMAPE = sum / number_of_values
+    return average_sMAPE
 
 
-"""
+def get_sMAPE_for_each_timestep(path, output_path):
+    """
+    For each timestep ahead in time, calculate the average sMAPE for this timestep.
+    Since time series with different resolutions have different length of the forecasting horizon we will sort on
+    resolution.
+    :param path: string. Path to a file with resolution for each timestep on each series
+    :return: Writes a new file with average sMAPE for each series on each timestep
+    """
+    reader = csv.reader(open(path))
 
-def get_sMAPE_for_timesteps(submission_id, resolution):
-    
-    #Calculate the sMAPE between reruns and the original results in the competition.
-    #:param submission_id: id of the method to compare original result with reruns
-    #:param resolution:
-    #:return:
+    # Skip header line
+    next(reader)
 
-    if isinstance(submission_id, int):
-        submission_id = str(submission_id)
-    if resolution not in resolutions:
-        raise Exception("This is not a valid resolution")
-    average_sMAPEs_for_timesteps = []
-    for timestep_in_horizon in range(1, horizon[resolution] + 1):
-        print(str(timestep_in_horizon) + " / " + str(horizon[resolution])
-        sMAPEs_for_timestep = []
-        for series_count in range(1, resolution_count[resolution] + 1):
-            series_id = resolution[0] + str(series_count)
-            predicted_values = get_predicted_values(submission_id, resolution, series_id, timestep_in_horizon)
-            real_value = get_real_value(resolution, series_id, timestep_in_horizon)
-            for prediction in predicted_values:
-                sMAPE_value = sMAPE(prediction, real_value)
-                sMAPEs_for_timestep.append(sMAPE_value)
-        average_sMAPE_this_timestep = mean(sMAPEs_for_timestep)
-        average_sMAPEs_for_timesteps.append(average_sMAPE_this_timestep)
+    sums = {
+        "Yearly": [0] * 6,
+        "Quarterly": [0] * 8,
+        "Monthly": [0] * 18,
+        "Weekly": [0] * 13,
+        "Daily": [0] * 14,
+        "Hourly": [0] * 48
+    }
 
-    path_to_folder = "../results/" + submission_id + "/" + resolution
-    create_path_if_not_exists(path_to_folder)
-    with open(path_to_folder + "/average_sMAPE.csv", "w") \
-            as file:
-        writer = csv.writer(file, delimiter=',')
-        writer.writerow(average_sMAPEs_for_timesteps)
+    resolution_count = {
+        "Yearly": 0,
+        "Quarterly": 0,
+        "Monthly": 0,
+        "Weekly": 0,
+        "Daily": 0,
+        "Hourly": 0
+    }
 
-    plt.plot(range(1, horizon[resolution] + 1), average_sMAPEs_for_timesteps, label=resolution)
+    # Sum up the sMAPEs for each timestep on each resolution
+    for series_forecast in reader:
+        id = series_forecast[0]
+        resolution = get_resolution(id)
+        sMAPEs = [float(i) for i in series_forecast[1:] if i != "NA" or i != ""]
+        sums[resolution] = np.add(sums[resolution], sMAPEs)
+        resolution_count[resolution] += 1
+
+    # Write to file
+    output_file = open(output_path, "w")
+    writer = csv.writer(output_file)
+    writer.writerow(["resolution"] + ["F" + str(i) for i in range(1, 49)])
+
+    for resolution in resolutions:
+        number_of_this_resolution = resolution_count[resolution]
+        sum_sMAPEs = sums[resolution]
+        averages = [i / number_of_this_resolution for i in sum_sMAPEs]
+        writer.writerow([resolution] + averages)
+
+
+def resolution_timestep_sMAPE_graph(path, output_path):
+    """
+    Given a path to a file with average sMAPE for each resolution and each timestep (like the one made by
+    get_sMAPE_for_each_timestep), creates a graph for this.
+    :param path:
+    :return:
+    """
+    reader = csv.reader(open(path))
+
+    # Skip header line
+    next(reader)
+
+
+    # For each resolution
+    for resolution_sMAPEs in reader:
+        resolution = resolution_sMAPEs[0]
+        sMAPEs = [float(i) for i in resolution_sMAPEs[1:]]
+
+        print(resolution)
+        print(range(1, len(sMAPEs) + 1))
+        print(sMAPEs)
+
+        # Plot the graph for this resolution
+        plt.plot(range(1, len(sMAPEs) + 1), sMAPEs, label=resolution)
+
     plt.xlabel("Timestep after last observed value")
     plt.ylabel("Average sMAPE")
     plt.legend(loc='best')
-    plt.savefig("../results/" + submission_id + "/" + resolution + "/sMAPE")
-    plt.show()
+    plt.savefig(output_path)
 
 
-#get_sMAPE_for_timesteps(237, "Yearly")
-"""
+compare_results("../../forecasts/118/rerun-1/forecast.csv", "../../data/test/all.csv",
+                 "../../forecasts/118/comparison-delete.csv")
+print(get_average_sMAPE("../../forecasts/118/comparison-delete.csv"))
+get_sMAPE_for_each_timestep("../../forecasts/118/comparison-delete.csv", "../../forecasts/118/resolution_timestep.csv")
+resolution_timestep_sMAPE_graph("../../forecasts/118/resolution_timestep.csv", "../../forecasts/118/graph.png")
