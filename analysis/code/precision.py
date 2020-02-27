@@ -2,18 +2,71 @@ from helper import *
 from statistics import mean
 import csv
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
-def sMAPE(predicted, actual):
+def sMAPE(value_1, value_2):
     """
-    :param predicted: float
-    :param actual: float
+    Calculate the sMAPE between two single values.
+    :param value_1: float
+    :param value_2: float
     :return: float
     """
-    return 200.0 * abs((actual - predicted)) / (abs(actual) + abs(predicted))
+    return 200.0 * abs((value_2 - value_1)) / (abs(value_2) + abs(value_1))
 
+
+def compare_results(file_1, file_2, output_path):
+    """
+    Takes in two files. Each file has a forecast for all the time series in the M4 competition. Writes a new file that
+    contains the sMAPES between all the forecasted values. The files are expected to have a header line.
+    :param file_1: path to file 1
+    :param file_2: path to file 2
+    :return: nothing. Writes a new file with sMAPES
+    """
+
+    file_1 = open(file_1).read().split("\n")
+    file_2 = open(file_2).read().split("\n")
+    output_file = open(output_path, "w")
+    writer = csv.writer(output_file)
+    writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
+
+    for series_number in range(1, len(file_1) - 1):
+        series_1 = file_1[series_number].split(",")
+        series_2 = file_2[series_number].split(",")
+        id_1 = series_1[0]
+        id_2 = series_2[0]
+        if id_1 != id_2:
+            raise Exception("Series ids not matching")
+        series_forecast_1 = series_1[1:]
+        series_forecast_2 = series_2[1:]
+
+        # Store sMAPEs between the two forecasts for this series
+        sMAPEs = [id_1]
+
+        for j in range(len(series_forecast_1)):
+            if series_forecast_1[j] == "NA" or series_forecast_1[j] == "":
+                break
+            value_1 = float(series_forecast_1[j])
+            value_2 = float(series_forecast_2[j])
+            smape = sMAPE(value_1, value_2)
+            sMAPEs.append(smape)
+
+        writer.writerow(sMAPEs)
+
+
+compare_results("../../forecasts/118/rerun-1/forecast.csv", "../../forecasts/118/rerun-2/forecast.csv",
+                "../../forecasts/118/comparison-delete.csv")
+
+
+"""
 
 def get_sMAPE_for_timesteps(submission_id, resolution):
+    
+    #Calculate the sMAPE between reruns and the original results in the competition.
+    #:param submission_id: id of the method to compare original result with reruns
+    #:param resolution:
+    #:return:
+
     if isinstance(submission_id, int):
         submission_id = str(submission_id)
     if resolution not in resolutions:
@@ -47,4 +100,5 @@ def get_sMAPE_for_timesteps(submission_id, resolution):
     plt.show()
 
 
-get_sMAPE_for_timesteps(237, "Yearly")
+#get_sMAPE_for_timesteps(237, "Yearly")
+"""
