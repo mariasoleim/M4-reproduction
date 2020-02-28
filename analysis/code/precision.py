@@ -150,10 +150,6 @@ def resolution_timestep_sMAPE_graph(path, output_path):
         resolution = resolution_sMAPEs[0]
         sMAPEs = [float(i) for i in resolution_sMAPEs[1:]]
 
-        print(resolution)
-        print(range(1, len(sMAPEs) + 1))
-        print(sMAPEs)
-
         # Plot the graph for this resolution
         plt.plot(range(1, len(sMAPEs) + 1), sMAPEs, label=resolution)
 
@@ -161,10 +157,4 @@ def resolution_timestep_sMAPE_graph(path, output_path):
     plt.ylabel("Average sMAPE")
     plt.legend(loc='best')
     plt.savefig(output_path)
-
-
-compare_results("../../forecasts/118/rerun-1/forecast.csv", "../../data/test/all.csv",
-                 "../../forecasts/118/comparison-delete.csv")
-print(get_average_sMAPE("../../forecasts/118/comparison-delete.csv"))
-get_sMAPE_for_each_timestep("../../forecasts/118/comparison-delete.csv", "../../forecasts/118/resolution_timestep.csv")
-resolution_timestep_sMAPE_graph("../../forecasts/118/resolution_timestep.csv", "../../forecasts/118/graph.png")
+    plt.clf()
