@@ -63,13 +63,8 @@ def get_predicted_values(submission_id, resolution, time_series_id, number_in_ho
     return values
 
 
-def get_real_value(resolution, time_series_id, number_in_horizon):
-    test = pd.read_csv("../../data/test/" + resolution + "-test.csv", index_col=0)
-    series = test.loc[time_series_id].tolist()
-    target = series[number_in_horizon - 1]
-    return target
-
-
-def create_path_if_not_exists(path):
-    if not os.path.isdir(path):
-        os.makedirs(path)
+def get_resolution(id):
+    id = remove_quotes_if_any(id)
+    for resolution in resolutions:
+        if resolution[0] == id[0]:
+            return resolution

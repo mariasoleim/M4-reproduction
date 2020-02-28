@@ -32,8 +32,8 @@ def compare_results(file_1, file_2, output_path):
     for series_number in range(1, len(file_1) - 1):
         series_1 = file_1[series_number].split(",")
         series_2 = file_2[series_number].split(",")
-        id_1 = series_1[0]
-        id_2 = series_2[0]
+        id_1 = remove_quotes_if_any(series_1[0])
+        id_2 = remove_quotes_if_any(series_2[0])
         if id_1 != id_2:
             raise Exception("Series ids not matching")
         series_forecast_1 = series_1[1:]
@@ -73,7 +73,7 @@ def get_average_sMAPE(path, output_path):
     number_of_values = 0
 
     for series_forecast in reader:
-        sMAPEs = [float(i) for i in series_forecast[1:] if i != "NA" or i != ""]
+        sMAPEs = [float(i) for i in series_forecast[1:] if i != "NA" and i != ""]
         for sMAPE in sMAPEs:
             sum += sMAPE
             number_of_values += 1
@@ -206,4 +206,4 @@ def get_average_sMAPEs_for_all_reruns(output_path, *sMAPE_files):
             sum = np.add(sum, sMAPE)
 
         average_sMAPEs = np.divide(sum, len(sMAPE_files))
-        writer.writerow(average_sMAPEs)
+        writer.writerow([series_id] + list(average_sMAPEs))
