@@ -80,7 +80,7 @@ def get_average_sMAPE(path, output_path):
 
     average_sMAPE = sum / number_of_values
 
-    output_file = open(output_path)
+    output_file = open(output_path, "w")
     output_file.write("Average sMAPE: ")
     output_file.write(str(average_sMAPE))
 
