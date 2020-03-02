@@ -1,85 +1,58 @@
 import csv
-from statistics import mean, pstdev
+from statistics import mean, stdev
 import matplotlib.pyplot as plt
 from helper import *
 
 
-def average_and_standard_deviation(submission_id, resolution):
-    if isinstance(submission_id, int):
-        submission_id = str(submission_id)
-    averages = []
-    standard_deviations = []
-    coefficients_of_variation = []
-    if resolution not in resolutions:
-        raise Exception("This is not a valid resolution")
-    for series_count in range(1, resolution_count[resolution] + 1):
-        print(str(series_count) + " / " + str(resolution_count[resolution]))
-        series_id = resolution[0] + str(series_count)
-        averages_for_series = [series_id]
-        standard_deviations_for_series = [series_id]
-        coefficients_of_variation_for_series = [series_id]
-        for number_in_horizon in range(1, horizon[resolution] + 1):
-            predicted_values = get_predicted_values(submission_id, resolution, series_id, number_in_horizon)
-            average = mean(predicted_values)
-            averages_for_series.append(average)
-            standard_deviation = pstdev(predicted_values)
-            standard_deviations_for_series.append(standard_deviation)
-            try:
-                coefficient_of_variation = standard_deviation / average
-            except ZeroDivisionError:
-                # The average of the predicted values for this series at this timestep is zero
-                # The coefficient of variation is not defined
-                # If the standard deviation also is zero, then we define the coefficient of variation to be zero (this
-                # differs from the original definition)
-                if standard_deviation == 0:
-                    coefficient_of_variation = 0
-                else:
-                    raise ValueError(
-                        "The coefficient of variation is not defined for a standard deviation of %f and an average of "
-                        "%f" % (standard_deviation, average))
-            coefficients_of_variation_for_series.append(coefficient_of_variation)
-        averages.append(averages_for_series)
-        standard_deviations.append(standard_deviations_for_series)
-        coefficients_of_variation.append(coefficients_of_variation_for_series)
+def get_coefficient_of_variation(output_path, *files):
+    """
+    Given a set of forecasts for a number of time series several steps ahead in time, calculate the coefficient of variation between all the predicted values for each step in the forecasting horizon for each time series.
+    :param output_path: String. The path to the destination where a new file will be created with all the coefficients of variation.
+    :param files: A number of strings. The strings are paths to different forecasts.
+    :return: Nothing. A new file is created in output_path with the result.
+    """
 
-    with open("../results/" + submission_id + "/" + resolution + "/averages.csv", "w") as file:
-        writer = csv.writer(file, delimiter=',')
-        for row in averages:
-            writer.writerow(row)
+    # Creates an output file for the final result
+    output_file = open(output_path, "w")
+    writer = csv.writer(output_file)
+    writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
 
-    with open("../results/" + submission_id + "/" + resolution + "/standard-deviations.csv", "w") as file:
-        writer = csv.writer(file, delimiter=',')
-        for row in standard_deviations:
-            writer.writerow(row)
+    reruns = []
+    for file in files:
+        reruns.append(open(file).read().split("\n"))
 
-    with open("../results/" + submission_id + "/" + resolution + "/coefficients_of_variation.csv", "w") as file:
-        writer = csv.writer(file, delimiter=',')
-        for row in coefficients_of_variation:
-            writer.writerow(row)
+    # For each time series
+    for series in range(1, len(reruns[0])):
 
+        # Get the id of this series for the first rerun to later check that the id is equal for all reruns
+        series_id = reruns[0][series].split(",")[0]
 
-def coefficient_of_variation_each_timestep(submission_id, resolution):
-    if isinstance(submission_id, int):
-        submission_id = str(submission_id)
-    coefficients = pd.read_csv("../results/" + submission_id + "/" + resolution +
-                               "/coefficients_of_variation.csv", header=None, index_col=0)
-    averages = []
-    for i in range(1, horizon[resolution] + 1):
-        coefficients_at_step = coefficients[i].tolist()
-        average = mean(coefficients_at_step)
-        averages.append(average)
+        horizon = [i for i in reruns[0][series].split(",")[1:] if i != "" and i != "NA"]
 
-    with open("../results/" + submission_id + "/" + resolution + "/average_coefficient_of_variation.csv", "w") \
-            as file:
-        writer = csv.writer(file, delimiter=',')
-        writer.writerow(averages)
+        # Creating a list for saving the coefficients of variation for this series
+        coefficients_of_variation = []
 
-    plt.plot(range(1, horizon[resolution] + 1), averages, label=resolution)
-    plt.xlabel("Timestep after last observed value")
-    plt.ylabel("Average coefficient of variation")
-    plt.legend(loc='best')
-    plt.savefig("../results/" + submission_id + "/" + resolution + "/coefficient_of_variation.png")
-    plt.show()
+        # For each step in the forecasting horizon
+        for step in range(1, len(horizon) + 1):
 
-average_and_standard_deviation(237, "Daily")
-coefficient_of_variation_each_timestep(237, "Daily")
+            # Save the different forecasts in a list to later find the coefficient of variation between them
+            predicted_values = []
+
+            # For each rerun
+            for rerun in reruns:
+                series_id_this_rerun = rerun[series].split(",")[0]
+
+                # Check that all the ids are equal
+                if series_id_this_rerun != series_id:
+                    raise Exception("Series ids are not equal.")
+
+                # Add the forecast
+                predicted_value = float(rerun[series].split(",")[step])
+                predicted_values.append(predicted_value)
+
+            coefficient_of_variation = stdev(predicted_values) / mean(predicted_values)
+            coefficients_of_variation.append(coefficient_of_variation)
+
+        # Write the coefficients of variation for the given series to file
+        writer.writerow([series_id] + coefficients_of_variation)
+
