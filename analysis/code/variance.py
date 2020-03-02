@@ -1,7 +1,5 @@
 import csv
 from statistics import mean, stdev
-import matplotlib.pyplot as plt
-from helper import *
 
 
 def get_coefficient_of_variation(output_path, *files):
