@@ -118,6 +118,9 @@ def get_sMAPE_for_each_timestep(path, output_path):
 
     # Sum up the sMAPEs for each timestep on each resolution
     for series_forecast in reader:
+        # Sometimes theres a newline in the end of the file
+        if len(series_forecast) == 1:
+            break
         id = series_forecast[0]
         resolution = get_resolution(id)
         sMAPEs = [float(i) for i in series_forecast[1:] if i != "NA" or i != ""]
