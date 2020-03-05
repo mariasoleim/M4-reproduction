@@ -1,3 +1,4 @@
+from helper import *
 import csv
 from statistics import mean, stdev
 
@@ -10,7 +11,9 @@ def get_coefficient_of_variation(output_path, *files):
     :return: Nothing. A new file is created in output_path with the result.
     """
 
-    # Creates an output file for the final result
+    # Create folders if they don't already exists and create an output file
+    folders_path = remove_file_from_path(output_path)
+    create_path_if_not_exists(folders_path)
     output_file = open(output_path, "w")
     writer = csv.writer(output_file)
     writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
@@ -48,7 +51,12 @@ def get_coefficient_of_variation(output_path, *files):
                 predicted_value = float(rerun[series].split(",")[step])
                 predicted_values.append(predicted_value)
 
-            coefficient_of_variation = stdev(predicted_values) / mean(predicted_values)
+            try:
+                coefficient_of_variation = stdev(predicted_values) / mean(predicted_values)
+            except ZeroDivisionError:
+                # The mean is zero and the coefficient of variation is not really defined. Since they are equal, we set
+                # it to zero.
+                coefficient_of_variation = 0
             coefficients_of_variation.append(coefficient_of_variation)
 
         # Write the coefficients of variation for the given series to file

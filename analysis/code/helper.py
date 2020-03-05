@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 resolutions = ["Yearly", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly"]
 
@@ -33,6 +34,27 @@ def remove_quotes_if_any(word):
         if char != "\"":
             out_word += char
     return out_word
+
+
+def remove_file_from_path(path):
+    """
+    Takes in a path of folders that ends with a file name. Removed the file name so that only the path of folders are left.
+    E.g. "forecasts/118/rerun-1/forecsts.csv" -> "forecasts/118/rerun-1"
+    :param path:
+    :return:
+    """
+    # Remove possible slash after filename
+    if path.endswith("/"):
+        path = path[:-1]
+
+    # Remove the file from path
+    folders = "/".join(path.split("/")[:-1])
+    return folders
+
+
+def create_path_if_not_exists(path):
+    if not os.path.isdir(path):
+        os.makedirs(path)
 
 
 def get_resolution(id):

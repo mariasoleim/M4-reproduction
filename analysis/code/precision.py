@@ -24,6 +24,10 @@ def compare_results(file_1, file_2, output_path):
 
     file_1 = open(file_1).read().split("\n")
     file_2 = open(file_2).read().split("\n")
+
+    # Create folders if they don't already exists and create an output file
+    folders_path = remove_file_from_path(output_path)
+    create_path_if_not_exists(folders_path)
     output_file = open(output_path, "w")
     writer = csv.writer(output_file)
     writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
@@ -46,7 +50,11 @@ def compare_results(file_1, file_2, output_path):
                 break
             value_1 = float(series_forecast_1[j])
             value_2 = float(series_forecast_2[j])
-            smape = sMAPE(value_1, value_2)
+            try:
+                smape = sMAPE(value_1, value_2)
+            except ZeroDivisionError:
+                # The sMAPE is not defined in this case. Since the two values are equal, we define the sMAPE as 0
+                smape = 0
             sMAPEs.append(smape)
 
         writer.writerow(sMAPEs)
