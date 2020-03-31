@@ -1,0 +1,3 @@
+#!/bin/bash
+c++ -DEIGEN_FAST_MATH -fPIC -funroll-loops -fno-finite-math-only -Wall -Wno-missing-braces -std=c++11 -Ofast -g -march=native -O2 -g -DNDEBUG -I/opt/dynet -I/opt/eigen -I/opt/dynet/build $1.cc slstm.cpp -o $1 -rdynamic /opt/dynet/build/dynet/libdynet.so -lpthread -lrt -Wl,-rpath,/opt/dynet/build/dynet
+

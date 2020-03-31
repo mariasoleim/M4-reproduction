@@ -1,0 +1,10 @@
+#!/bin/bash
+rm ./nohup.out
+nohup nice -n 10 ./ES_RNN_Yearly 0 &
+nohup nice -n 10 ./ES_RNN_Yearly 10 &
+nohup nice -n 10 ./ES_RNN_Yearly 20 &
+nohup nice -n 10 ./ES_RNN_Yearly 30 &
+nohup nice -n 10 ./ES_RNN_Yearly 40 &
+nohup nice -n 10 ./ES_RNN_Yearly 50 &
+nohup nice -n 10 ./ES_RNN_Yearly 60 &
+nohup nice -n 10 ./ES_RNN_Yearly 70 &
