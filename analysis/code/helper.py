@@ -84,9 +84,9 @@ def get_average(path, output_path):
     number_of_values = 0
 
     for series_forecast in reader:
-        sMAPEs = [float(i) for i in series_forecast[1:] if i != "NA" and i != ""]
-        for sMAPE in sMAPEs:
-            sum += sMAPE
+        values = [float(i) for i in series_forecast[1:] if i != "NA" and i != ""]
+        for value in values:
+            sum += value
             number_of_values += 1
 
     average = sum / number_of_values
@@ -98,11 +98,12 @@ def get_average(path, output_path):
 
 def get_value_for_each_timestep(path, output_path):
     """
-    For each timestep ahead in time, calculate the average value for this timestep.
+    For each timestep ahead in time, calculate the average value for this timestep. Could for instance be the average of
+    sAPE values, ASE values or OWA values.
     Since time series with different resolutions have different length of the forecasting horizon we will sort on
     resolution.
     :param path: String. Path to a file with resolution for each timestep on each series
-    :return: Writes a new file with average sMAPE for each series on each timestep
+    :return: Writes a new file with average values for each series on each timestep
     """
     reader = csv.reader(open(path))
 
@@ -127,15 +128,15 @@ def get_value_for_each_timestep(path, output_path):
         "Hourly": 0
     }
 
-    # Sum up the sMAPEs for each timestep on each resolution
+    # Sum up the values for each timestep on each resolution
     for series_forecast in reader:
-        # Sometimes theres a newline in the end of the file
+        # Sometimes there's a newline in the end of the file
         if len(series_forecast) == 1:
             break
         id = series_forecast[0]
         resolution = get_resolution(id)
-        sMAPEs = [float(i) for i in series_forecast[1:] if i != "NA" or i != ""]
-        sums[resolution] = np.add(sums[resolution], sMAPEs)
+        values = [float(i) for i in series_forecast[1:] if i != "NA" or i != ""]
+        sums[resolution] = np.add(sums[resolution], values)
         resolution_count[resolution] += 1
 
     # Write to file
@@ -145,17 +146,17 @@ def get_value_for_each_timestep(path, output_path):
 
     for resolution in resolutions:
         number_of_this_resolution = resolution_count[resolution]
-        sum_sMAPEs = sums[resolution]
-        averages = [i / number_of_this_resolution for i in sum_sMAPEs]
+        sum_values = sums[resolution]
+        averages = [i / number_of_this_resolution for i in sum_values]
         writer.writerow([resolution] + averages)
 
 
 def resolution_timestep_graph(path, output_path, y_label):
     """
-    Given a path to a file with average sMAPE for each resolution and each timestep (like the one made by
-    get_sMAPE_for_each_timestep), creates a graph for this.
-    :param path: String. Path to a file with average sMAPE for each resolution and each timestep (like the one made by
-    get_sMAPE_for_each_timestep)
+    Given a path to a file with a value (for instance average sMAPE) for each resolution and each timestep (like the one
+    made by get_value_for_each_timestep), creates a graph for this.
+    :param path: String. Path to a file with value for each resolution and each timestep (like the one made by
+    get_value_for_each_timestep)
     :return: Nothing. Writes a file to output_path.
     """
     reader = csv.reader(open(path))
@@ -164,12 +165,12 @@ def resolution_timestep_graph(path, output_path, y_label):
     next(reader)
 
     # For each resolution
-    for resolution_sMAPEs in reader:
-        resolution = resolution_sMAPEs[0]
-        sMAPEs = [float(i) for i in resolution_sMAPEs[1:]]
+    for resolution_values in reader:
+        resolution = resolution_values[0]
+        values = [float(i) for i in resolution_values[1:]]
 
         # Plot the graph for this resolution
-        plt.plot(range(1, len(sMAPEs) + 1), sMAPEs, label=resolution)
+        plt.plot(range(1, len(values) + 1), values, label=resolution)
 
     plt.xlabel("Timestep after last observed value")
     plt.ylabel(y_label)
