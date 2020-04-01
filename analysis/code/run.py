@@ -5,7 +5,7 @@ from variance import *
 for rerun in range(1, 6):
     rerun = str(rerun)
     compare_results("../../forecasts/118/rerun-" + rerun + "/forecasts.csv", "../../data/test/all.csv",
-                    "../results/118/comparison-to-test-set/rerun-" + rerun + "/precision.csv")
+                    "../results/118/comparison-to-test-set/rerun-" + rerun + "/precision.csv", sAPE)
     get_average("../results/118/comparison-to-test-set/rerun-" + rerun + "/precision.csv",
                       "../results/118/comparison-to-test-set/rerun-" + rerun + "/sMAPE-average.txt")
     get_value_for_each_timestep("../results/118/comparison-to-test-set/rerun-" + rerun + "/precision.csv",
@@ -32,7 +32,7 @@ for rerun in range(1, 6):
     # Calculate the sAPE between a rerun and the original submission
     compare_results("../../forecasts/118/rerun-" + rerun + "/forecasts.csv",
                     "../../forecasts/118/original/submission-118.csv",
-                    "../results/118/comparison-to-original-submission/rerun-" + rerun + "/precision.csv")
+                    "../results/118/comparison-to-original-submission/rerun-" + rerun + "/precision.csv", sAPE)
     # Finds the average of all sAPEs and writes the average to a text file
     get_average("../results/118/comparison-to-original-submission/rerun-" + rerun + "/precision.csv",
                       "../results/118/comparison-to-original-submission/rerun-" + rerun + "/sMAPE-average.txt")
@@ -75,7 +75,7 @@ resolution_timestep_graph("../results/118/variation/coefficient-of-variation-res
 for rerun in range(1, 6):
     rerun = str(rerun)
     compare_results("../../forecasts/069/rerun-" + rerun + "/forecasts.csv", "../../data/test/all.csv",
-                    "../results/069/comparison-to-test-set/rerun-" + rerun + "/precision.csv")
+                    "../results/069/comparison-to-test-set/rerun-" + rerun + "/precision.csv", sAPE)
     get_average("../results/069/comparison-to-test-set/rerun-" + rerun + "/precision.csv",
                       "../results/069/comparison-to-test-set/rerun-" + rerun + "/sAPE-average.txt")
     get_value_for_each_timestep("../results/069/comparison-to-test-set/rerun-" + rerun + "/precision.csv",
@@ -101,7 +101,7 @@ for rerun in range(1, 6):
     rerun = str(rerun)
     compare_results("../../forecasts/069/rerun-" + rerun + "/forecasts.csv",
                     "../../forecasts/069/original/submission-069.csv",
-                    "../results/069/comparison-to-original-submission/rerun-" + rerun + "/precision.csv")
+                    "../results/069/comparison-to-original-submission/rerun-" + rerun + "/precision.csv", sAPE)
     get_average("../results/069/comparison-to-original-submission/rerun-" + rerun + "/precision.csv",
                       "../results/069/comparison-to-original-submission/rerun-" + rerun + "/sMAPE-average.txt")
     get_value_for_each_timestep("../results/069/comparison-to-original-submission/rerun-" + rerun + "/precision.csv",

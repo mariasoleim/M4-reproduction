@@ -39,14 +39,14 @@ def ASE(value_1, value_2, training_values, m):
     return result
 
 
-
-def compare_results(file_1, file_2, output_path):
+def compare_results(file_1, file_2, output_path, error_function):
     """
     Takes in two files. Each file has a forecast for all the time series in the M4 competition. Writes a new file that
-    contains the sAPEs between all the forecasted values. The files are expected to have a header line.
+    contains the error between all the forecasted values. The files are expected to have a header line.
     :param file_1: String. Path to file 1
     :param file_2: String. Path to file 2
-    :return: Nothing. Writes a new file with sAPES
+    :param error_function: Function name. Function that should be used to calculate the error between all the entries.
+    :return: Nothing. Writes a new file with errors
     """
 
     file_1 = open(file_1).read().split("\n")
@@ -69,8 +69,8 @@ def compare_results(file_1, file_2, output_path):
         series_forecast_1 = series_1[1:]
         series_forecast_2 = series_2[1:]
 
-        # Store sAPEs between the two forecasts for this series
-        sAPEs = [id_1]
+        # Store error between the two forecasts for this series
+        errors = [id_1]
 
         for j in range(len(series_forecast_1)):
             if series_forecast_1[j] == "NA" or series_forecast_1[j] == "":
@@ -78,13 +78,13 @@ def compare_results(file_1, file_2, output_path):
             value_1 = float(series_forecast_1[j])
             value_2 = float(series_forecast_2[j])
             try:
-                sape = sAPE(value_1, value_2)
+                error = error_function(value_1, value_2)
             except ZeroDivisionError:
-                # The sAPE is not defined in this case. Since the two values are equal, we define the sAPE as 0
-                sape = 0
-            sAPEs.append(sape)
+                # TODO: What to do with errors that are not defined.
+                error = 0
+            errors.append(error)
 
-        writer.writerow(sAPEs)
+        writer.writerow(errors)
 
 
 def get_average_values_for_all_reruns(output_path, *input_files):
