@@ -13,6 +13,33 @@ def sAPE(value_1, value_2):
     return 200.0 * abs((value_2 - value_1)) / (abs(value_2) + abs(value_1))
 
 
+def ASE(value_1, value_2, training_values, m):
+    """
+    Calculate the ASE (Absolute Scaled Error) between two single values given the training set and a frequency.
+    :param value_1: Float
+    :param value_2: Float
+    :param training_values: A list of floats.
+    :param m: Integer. The frequency.
+    :return: Float
+    """
+    n = len(training_values)
+
+    # Calculate the nominator in the formula. That is the absoute error between the two values.
+    absolute_error = abs(value_1 - value_2)
+
+    # Calculate the denominator in the formula. This is the average absolute error the seasonal naive method would have
+    # made on the training data.
+    total_seasonal_naive_error = 0
+    for t in range(m, n):
+        seasonal_error = abs(training_values[t] - training_values[t-m])
+        total_seasonal_naive_error += seasonal_error
+    mean_seasonal_naive_error = total_seasonal_naive_error / (n-m)
+
+    result = absolute_error / mean_seasonal_naive_error
+    return result
+
+
+
 def compare_results(file_1, file_2, output_path):
     """
     Takes in two files. Each file has a forecast for all the time series in the M4 competition. Writes a new file that
