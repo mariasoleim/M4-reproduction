@@ -29,14 +29,18 @@ resolution_timestep_graph("../results/118/comparison-to-test-set/precision-resol
 # How equal are the reruns to the original submission?
 for rerun in range(1, 6):
     rerun = str(rerun)
+    # Calculate the sAPE between a rerun and the original submission
     compare_results("../../forecasts/118/rerun-" + rerun + "/forecasts.csv",
                     "../../forecasts/118/original/submission-118.csv",
                     "../results/118/comparison-to-original-submission/rerun-" + rerun + "/precision.csv")
+    # Finds the average of all sAPEs and writes the average to a text file
     get_average("../results/118/comparison-to-original-submission/rerun-" + rerun + "/precision.csv",
                       "../results/118/comparison-to-original-submission/rerun-" + rerun + "/sMAPE-average.txt")
+    # Sorts on resolution and calculate average sAPE for each time step
     get_value_for_each_timestep("../results/118/comparison-to-original-submission/rerun-" + rerun + "/precision.csv",
                                 "../results/118/comparison-to-original-submission/rerun-" +
                                 rerun + "/precision-resolution-timestep.csv")
+    # Creates a graph of the result
     resolution_timestep_graph("../results/118/comparison-to-original-submission/rerun-" + rerun +
                                     "/precision-resolution-timestep.csv",
                                     "../results/118/comparison-to-original-submission/rerun-" + rerun + "/precision.png"
@@ -44,11 +48,15 @@ for rerun in range(1, 6):
                               )
 
 paths = ["../results/118/comparison-to-original-submission/rerun-" + str(rerun) + "/precision.csv" for rerun in range(1, 6)]
+# Calculate the average sAPE of the five reruns for every entry
 get_average_values_for_all_reruns("../results/118/comparison-to-original-submission/precision.csv", *paths)
+# Calculate the average of the preceding result
 get_average("../results/118/comparison-to-original-submission/precision.csv",
                   "../results/118/comparison-to-original-submission/sMAPE-average.txt")
+# # Sorts on resolution and calculate average sAPE for each time step
 get_value_for_each_timestep("../results/118/comparison-to-original-submission/precision.csv",
                             "../results/118/comparison-to-original-submission/precision-resolution-timestep.csv")
+# Creates a graph of the preceding result
 resolution_timestep_graph("../results/118/comparison-to-original-submission/precision-resolution-timestep.csv",
                           "../results/118/comparison-to-original-submission/precision.png",
                           "Average sAPE")
