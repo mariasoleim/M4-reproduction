@@ -1,0 +1,11 @@
+#!/bin/bash
+rm ./nohup.out
+nohup nice -n 10 ./ES_RNN_Quarterly 9 1 &
+nohup nice -n 10 ./ES_RNN_Quarterly 9 2 &
+nohup nice -n 10 ./ES_RNN_Quarterly 10 1 5 &
+nohup nice -n 10 ./ES_RNN_Quarterly 10 2 5 &
+nohup nice -n 10 ./ES_RNN_Quarterly 11 1 10 &
+nohup nice -n 10 ./ES_RNN_Quarterly 11 2 10 &
+nohup nice -n 10 ./ES_RNN_Quarterly 12 1 15 &
+nohup nice -n 10 ./ES_RNN_Quarterly 12 2 15 &
+

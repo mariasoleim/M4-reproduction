@@ -1,0 +1,10 @@
+#!/bin/bash
+rm ./nohup.out
+nohup nice -n 10 ./ES_RNN_Weekly 0 &
+nohup nice -n 10 ./ES_RNN_Weekly 10 &
+nohup nice -n 10 ./ES_RNN_Weekly 20 &
+nohup nice -n 10 ./ES_RNN_Weekly 30 &
+nohup nice -n 10 ./ES_RNN_Weekly 40 &
+nohup nice -n 10 ./ES_RNN_Weekly 50 &
+nohup nice -n 10 ./ES_RNN_Weekly 60 &
+nohup nice -n 10 ./ES_RNN_Weekly 70 &

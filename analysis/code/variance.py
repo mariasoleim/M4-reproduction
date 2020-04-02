@@ -5,8 +5,10 @@ from statistics import mean, stdev
 
 def get_coefficient_of_variation(output_path, *files):
     """
-    Given a set of forecasts for a number of time series several steps ahead in time, calculate the coefficient of variation between all the predicted values for each step in the forecasting horizon for each time series.
-    :param output_path: String. The path to the destination where a new file will be created with all the coefficients of variation.
+    Given a set of forecasts for a number of time series several steps ahead in time, calculate the coefficient of
+    variation between all the predicted values for each step in the forecasting horizon for each time series.
+    :param output_path: String. The path to the destination where a new file will be created with all the coefficients
+    of variation.
     :param files: A number of strings. The strings are paths to different forecasts.
     :return: Nothing. A new file is created in output_path with the result.
     """

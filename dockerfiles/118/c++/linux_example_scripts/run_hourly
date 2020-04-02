@@ -1,0 +1,10 @@
+#!/bin/bash
+rm ./nohup.out
+nohup nice -n 10 ./ES_RNN_Hourly 0 &
+nohup nice -n 10 ./ES_RNN_Hourly 10 &
+nohup nice -n 10 ./ES_RNN_Hourly 20 &
+nohup nice -n 10 ./ES_RNN_Hourly 30 &
+nohup nice -n 10 ./ES_RNN_Hourly 40 &
+nohup nice -n 10 ./ES_RNN_Hourly 50 &
+nohup nice -n 10 ./ES_RNN_Hourly 60 &
+nohup nice -n 10 ./ES_RNN_Hourly 70 &
