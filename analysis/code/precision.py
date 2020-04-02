@@ -39,13 +39,12 @@ def ASE(value_1, value_2, training_values, m):
     return result
 
 
-def compare_results(file_1, file_2, output_path, error_function):
+def compare_results_sAPE(file_1, file_2, output_path):
     """
     Takes in two files. Each file has a forecast for all the time series in the M4 competition. Writes a new file that
     contains the error between all the forecasted values. The files are expected to have a header line.
     :param file_1: String. Path to file 1
     :param file_2: String. Path to file 2
-    :param error_function: Function name. Function that should be used to calculate the error between all the entries.
     :return: Nothing. Writes a new file with errors
     """
 
@@ -78,7 +77,7 @@ def compare_results(file_1, file_2, output_path, error_function):
             value_1 = float(series_forecast_1[j])
             value_2 = float(series_forecast_2[j])
             try:
-                error = error_function(value_1, value_2)
+                error = sAPE(value_1, value_2)
             except ZeroDivisionError:
                 # TODO: What to do with errors that are not defined.
                 error = 0

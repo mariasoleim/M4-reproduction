@@ -7,8 +7,8 @@ for method_id in method_ids:
     # How equal are the reruns to the test set?
     for rerun in range(1, 6):
         rerun = str(rerun)
-        compare_results("../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv", "../../data/test/all.csv",
-                        "../results/" + method_id + "/comparison-to-test-set/rerun-" + rerun + "/precision.csv", sAPE)
+        compare_results_sAPE("../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv", "../../data/test/all.csv",
+                        "../results/" + method_id + "/comparison-to-test-set/rerun-" + rerun + "/precision.csv")
         get_average("../results/" + method_id + "/comparison-to-test-set/rerun-" + rerun + "/precision.csv",
                           "../results/" + method_id + "/comparison-to-test-set/rerun-" + rerun + "/sMAPE-average.txt")
         get_value_for_each_timestep("../results/" + method_id + "/comparison-to-test-set/rerun-" + rerun + "/precision.csv",
@@ -32,9 +32,9 @@ for method_id in method_ids:
     for rerun in range(1, 6):
         rerun = str(rerun)
         # Calculate the sAPE between a rerun and the original submission
-        compare_results("../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv",
+        compare_results_sAPE("../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv",
                         "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv",
-                        "../results/" + method_id + "/comparison-to-original-submission/rerun-" + rerun + "/precision.csv", sAPE)
+                        "../results/" + method_id + "/comparison-to-original-submission/rerun-" + rerun + "/precision.csv")
         # Finds the average of all sAPEs and writes the average to a text file
         get_average("../results/" + method_id + "/comparison-to-original-submission/rerun-" + rerun + "/precision.csv",
                           "../results/" + method_id + "/comparison-to-original-submission/rerun-" + rerun + "/sMAPE-average.txt")
