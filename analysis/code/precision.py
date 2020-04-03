@@ -142,6 +142,57 @@ def compare_results_ASE(file_1, file_2, output_path):
         writer.writerow(errors)
 
 
+def compare_results_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output_path):
+    """
+    Calculate OWI between all values.
+    :return: Nothing. Writes a file to outout_path.
+    """
+    sAPE_file = open(sAPE_file).read().split("\n")
+    ASE_file = open(ASE_file).read().split("\n")
+    naive2_sAPE_file = open(naive2_sAPE_file).read().split("\n")
+    naive2_ASE_file = open(naive2_ASE_file).read().split("\n")
+
+    # Create folders if they don't already exists and create an output file
+    folders_path = remove_file_from_path(output_path)
+    create_path_if_not_exists(folders_path)
+    output_file = open(output_path, "w")
+    writer = csv.writer(output_file)
+    writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
+
+    for series_number in range(1, len(sAPE_file) - 1):
+        series_1 = sAPE_file[series_number].split(",")
+        series_2 = ASE_file[series_number].split(",")
+        series_3 = naive2_sAPE_file[series_number].split(",")
+        series_4 = naive2_ASE_file[series_number].split(",")
+        id_1 = remove_quotes_if_any(series_1[0])
+        id_2 = remove_quotes_if_any(series_2[0])
+        id_3 = remove_quotes_if_any(series_3[0])
+        id_4 = remove_quotes_if_any(series_4[0])
+        if id_1 != id_2 or id_1 != id_3 or id_1 != id_4:
+            raise Exception("Series ids not matching")
+        sAPE_values = series_1[1:]
+        ASE_values = series_2[1:]
+        naive2_sAPE_values = series_3[1:]
+        naive2_ASE_values = series_4[1:]
+
+        OWA_values = [id_1]
+
+        for j in range(len(sAPE_values)):
+            if sAPE_values[j] == "NA" or sAPE_values[j] == "":
+                break
+            sAPE_value = float(sAPE_values[j])
+            ASE_value = float(ASE_values[j])
+            naive2_sAPE_value = float(naive2_sAPE_values[j])
+            naive2_ASE_value = float(naive2_ASE_values[j])
+
+            relative_sAPE = sAPE_value / naive2_sAPE_value
+            relative_ASE = ASE_value / naive2_ASE_value
+            OWA = (relative_sAPE + relative_ASE) / 2
+            OWA_values.append(OWA)
+
+        writer.writerow(OWA_values)
+
+
 def get_average_values_for_all_reruns(output_path, *input_files):
     """
     Given a set of files containing values (for instance sAPE values), creates a new file giving the average values of
