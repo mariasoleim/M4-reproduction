@@ -24,6 +24,15 @@ horizon = {
     "Hourly": 48
 }
 
+frequency = {
+    "Yearly": 1,
+    "Quarterly": 4,
+    "Monthly": 12,
+    "Weekly": 1,
+    "Daily": 1,
+    "Hourly": 24
+}
+
 
 def remove_quotes_if_any(word):
     """
@@ -62,6 +71,27 @@ def get_resolution(id):
     for resolution in resolutions:
         if resolution[0] == id[0]:
             return resolution
+
+
+def get_frequency(id):
+    resolution = get_resolution(id)
+    return frequency[resolution]
+
+
+def get_training_values(id):
+    """
+    Given a series id, e.g. "Y12333", gives all training values for that series.
+    :param id: String. E.g. "Y12333"
+    :return: A list of floats.
+    """
+    id = remove_quotes_if_any(id)
+    training_set = open("../../data/training/all.csv")
+    current_id = ""
+    while current_id != id:
+        current_line = training_set.readline()
+        current_id = remove_quotes_if_any(current_line.split(",")[0])
+    training_values = [float(remove_quotes_if_any(i)) for i in current_line.split(",")[1:] if i.strip() != ""]
+    return training_values
 
 
 def get_average(path, output_path):
