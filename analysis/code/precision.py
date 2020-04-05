@@ -142,7 +142,7 @@ def compare_results_ASE(file_1, file_2, output_path):
         writer.writerow(errors)
 
 
-def compare_results_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output_path):
+def calculate_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output_path):
     """
     Calculate OWI between all values.
     :return: Nothing. Writes a file to outout_path.
