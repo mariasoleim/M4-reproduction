@@ -10,7 +10,12 @@ def sAPE(value_1, value_2):
     :param value_2: Float
     :return: Float
     """
-    return 200.0 * abs((value_2 - value_1)) / (abs(value_2) + abs(value_1))
+    try:
+        result = 200.0 * abs((value_2 - value_1)) / (abs(value_2) + abs(value_1))
+    except ZeroDivisionError:
+        # The values are both zero and the sAPE is not defined
+        result = None
+    return result
 
 
 def get_mean_absolute_scaled_error(training_values, m):
@@ -38,7 +43,11 @@ def ASE(value_1, value_2, mean_absolute_scaled_error):
     :return:
     """
     absolute_error = abs(value_1 - value_2)
-    result = absolute_error / mean_absolute_scaled_error
+    try:
+        result = absolute_error / mean_absolute_scaled_error
+    except ZeroDivisionError:
+        # ASE is not defined is this case
+        result = None
     return result
 
 
@@ -79,11 +88,7 @@ def compare_results_sAPE(file_1, file_2, output_path):
                 break
             value_1 = float(series_forecast_1[j])
             value_2 = float(series_forecast_2[j])
-            try:
-                error = sAPE(value_1, value_2)
-            except ZeroDivisionError:
-                # TODO: What to do with errors that are not defined.
-                error = 0
+            error = sAPE(value_1, value_2)
             errors.append(error)
 
         writer.writerow(errors)
@@ -132,11 +137,7 @@ def compare_results_ASE(file_1, file_2, output_path):
                 break
             value_1 = float(series_forecast_1[j])
             value_2 = float(series_forecast_2[j])
-            try:
-                error = ASE(value_1, value_2, mean_seasonal_naive_error)
-            except ZeroDivisionError:
-                # TODO: What to do with errors that are not defined.
-                error = 0
+            error = ASE(value_1, value_2, mean_seasonal_naive_error)
             errors.append(error)
 
         writer.writerow(errors)
@@ -145,7 +146,7 @@ def compare_results_ASE(file_1, file_2, output_path):
 def calculate_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output_path):
     """
     Calculate OWI between all values.
-    :return: Nothing. Writes a file to outout_path.
+    :return: Nothing. Writes a file to output_path.
     """
     sAPE_file = open(sAPE_file).read().split("\n")
     ASE_file = open(ASE_file).read().split("\n")
@@ -185,9 +186,22 @@ def calculate_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output
             naive2_sAPE_value = float(naive2_sAPE_values[j])
             naive2_ASE_value = float(naive2_ASE_values[j])
 
-            relative_sAPE = sAPE_value / naive2_sAPE_value
-            relative_ASE = ASE_value / naive2_ASE_value
-            OWA = (relative_sAPE + relative_ASE) / 2
+            try:
+                relative_sAPE = sAPE_value / naive2_sAPE_value
+            except (ZeroDivisionError, TypeError):
+                # ZeroDivisionError: Naive2 sAPE is zero (naive2 predicts the correct test value)
+                # TypeError: Either the sAPE or the naive2 sAPE is not defined
+                relative_sAPE = None
+            try:
+                relative_ASE = ASE_value / naive2_ASE_value
+            except (ZeroDivisionError, TypeError):
+                # ZeroDivisionError: Naive2 ASE is zero (naive2 predicts the correct test value)
+                # TypeError: Either the ASE or the naive2 ASE is not defined
+                relative_ASE = None
+            try:
+                OWA = (relative_sAPE + relative_ASE) / 2
+            except TypeError:
+                OWA = None
             OWA_values.append(OWA)
 
         writer.writerow(OWA_values)
