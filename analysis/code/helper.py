@@ -78,6 +78,11 @@ def get_frequency(id):
     return frequency[resolution]
 
 
+def get_horizon(id):
+    resolution = get_resolution(id)
+    return horizon[resolution]
+
+
 def get_training_values(id):
     """
     Given a series id, e.g. "Y12333", gives all training values for that series.

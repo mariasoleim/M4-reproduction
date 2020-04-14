@@ -83,12 +83,15 @@ def compare_results_sAPE(file_1, file_2, output_path):
         # Store error between the two forecasts for this series
         errors = [id_1]
 
-        for j in range(len(series_forecast_1)):
-            if series_forecast_1[j] == "NA" or series_forecast_1[j] == "":
-                break
-            value_1 = float(series_forecast_1[j])
-            value_2 = float(series_forecast_2[j])
-            error = sAPE(value_1, value_2)
+        horizon = get_horizon(id_1)
+        for j in range(horizon):
+            # A model might not have been able to predict a value
+            if series_forecast_1[j] == "NA" or series_forecast_2[j] == "NA":
+                error = "NA"
+            else:
+                value_1 = float(series_forecast_1[j])
+                value_2 = float(series_forecast_2[j])
+                error = sAPE(value_1, value_2)
             errors.append(error)
 
         writer.writerow(errors)
@@ -132,12 +135,15 @@ def compare_results_ASE(file_1, file_2, output_path):
         # Store error between the two forecasts for this series
         errors = [id_1]
 
-        for j in range(len(series_forecast_1)):
-            if series_forecast_1[j] == "NA" or series_forecast_1[j] == "":
-                break
-            value_1 = float(series_forecast_1[j])
-            value_2 = float(series_forecast_2[j])
-            error = ASE(value_1, value_2, mean_seasonal_naive_error)
+        horizon = get_horizon(id_1)
+        for j in range(horizon):
+            # A model might not have been able to predict a value
+            if series_forecast_1[j] == "NA" or series_forecast_2[j] == "NA":
+                error = "NA"
+            else:
+                value_1 = float(series_forecast_1[j])
+                value_2 = float(series_forecast_2[j])
+                error = ASE(value_1, value_2, mean_seasonal_naive_error)
             errors.append(error)
 
         writer.writerow(errors)
@@ -178,30 +184,25 @@ def calculate_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output
 
         OWA_values = [id_1]
 
-        for j in range(len(sAPE_values)):
-            if sAPE_values[j] == "NA" or sAPE_values[j] == "":
-                break
-            sAPE_value = float(sAPE_values[j])
-            ASE_value = float(ASE_values[j])
-            naive2_sAPE_value = float(naive2_sAPE_values[j])
-            naive2_ASE_value = float(naive2_ASE_values[j])
+        horizon = get_horizon(id_1)
+        
+        for j in range(horizon):
+            try:
+                # All values have to be available for the OWA to be calculated
+                sAPE_value = float(sAPE_values[j])
+                ASE_value = float(ASE_values[j])
+                naive2_sAPE_value = float(naive2_sAPE_values[j])
+                naive2_ASE_value = float(naive2_ASE_values[j])
 
-            try:
                 relative_sAPE = sAPE_value / naive2_sAPE_value
-            except (ZeroDivisionError, TypeError):
-                # ZeroDivisionError: Naive2 sAPE is zero (naive2 predicts the correct test value)
-                # TypeError: Either the sAPE or the naive2 sAPE is not defined
-                relative_sAPE = None
-            try:
                 relative_ASE = ASE_value / naive2_ASE_value
-            except (ZeroDivisionError, TypeError):
-                # ZeroDivisionError: Naive2 ASE is zero (naive2 predicts the correct test value)
-                # TypeError: Either the ASE or the naive2 ASE is not defined
-                relative_ASE = None
-            try:
+
+            except (ValueError, ZeroDivisionError):
+                # ValueError: Some value is not available
+                # ZeroDivisionError: Naive2 sAPE and ASE is zero (naive2 predicts the correct test value)
+                OWA = "NA"
+            else:
                 OWA = (relative_sAPE + relative_ASE) / 2
-            except TypeError:
-                OWA = None
             OWA_values.append(OWA)
 
         writer.writerow(OWA_values)
