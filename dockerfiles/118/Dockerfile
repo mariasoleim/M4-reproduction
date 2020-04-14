@@ -73,3 +73,7 @@ RUN rm ES_RNN_Daily.cc
 RUN rm ES_RNN_Hourly.cc
 RUN rm linux_example_scripts/build_mkl
 
+#Add README
+COPY ./README.md .
+
+
