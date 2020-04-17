@@ -170,7 +170,7 @@ def get_value_for_each_timestep(path, output_path):
             break
         id = series_forecast[0]
         resolution = get_resolution(id)
-        values = [float(i) for i in series_forecast[1:] if remove_quotes_if_any(i) != "NA" or i != ""]
+        values = [float(i) for i in series_forecast[1:] if i != "NA" and i != ""]
         sums[resolution] = np.add(sums[resolution], values)
         resolution_count[resolution] += 1
 
