@@ -4,16 +4,15 @@ from variance import *
 test_set_path = "../../data/test/all.csv"
 
 # Calculate sAPE and ASE for the naive2 method compared to the test set
-naive2_sAPE = "../results/naive2/sAPE.csv"
-naive2_ASE = "../results/naive2/ASE.csv"
+naive2_sAPE = "../results/naive2/comparison-to-test-set/sAPE.csv"
+naive2_ASE = "../results/naive2/comparison-to-test-set/ASE.csv"
 compare_results_sAPE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_sAPE)
-compare_results_ASE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_ASE)
+# compare_results_ASE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_ASE)
 
 method_ids = ["069/malvik", "118/malvik", "245/malvik"]
 
 for method_id in method_ids:
 
-    forecast_path = "../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv"
     original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
     result_path = "../results/" + method_id
     comparison_to_test_set_path = result_path + "/comparison-to-test-set"
@@ -23,6 +22,7 @@ for method_id in method_ids:
     # How equal are the reruns to the test set?
     for rerun in range(1, 6):
         rerun = str(rerun)
+        forecast_path = "../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_test_set_path + "/rerun-" + rerun
         compare_results_sAPE(forecast_path, test_set_path, result_folder + "/sAPE.csv")
         # compare_results_ASE(forecast_path, test_set_path, result_folder + "/ASE.csv")
@@ -61,6 +61,7 @@ for method_id in method_ids:
     # How equal are the reruns to the original submission?
     for rerun in range(1, 6):
         rerun = str(rerun)
+        forecast_path = "../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_original_submission_path + "/rerun-" + rerun
         # Calculate the sAPE between a rerun and the original submission
         compare_results_sAPE(forecast_path, original_submission_path, result_folder + "/sAPE.csv")
