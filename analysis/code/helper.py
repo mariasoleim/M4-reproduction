@@ -155,12 +155,12 @@ def get_value_for_each_timestep(path, output_path):
     }
 
     resolution_count = {
-        "Yearly": 0,
-        "Quarterly": 0,
-        "Monthly": 0,
-        "Weekly": 0,
-        "Daily": 0,
-        "Hourly": 0
+        "Yearly": [0] * 6,
+        "Quarterly": [0] * 8,
+        "Monthly": [0] * 18,
+        "Weekly": [0] * 13,
+        "Daily": [0] * 14,
+        "Hourly": [0] * 48
     }
 
     # Sum up the values for each timestep on each resolution
@@ -170,9 +170,19 @@ def get_value_for_each_timestep(path, output_path):
             break
         id = series_forecast[0]
         resolution = get_resolution(id)
-        values = [float(i) for i in series_forecast[1:] if i != "NA" and i != ""]
+        horizon = get_horizon(id)
+        values = []
+        resolution_count_incrementer = []
+        for i in series_forecast[1:horizon + 1]:
+            if remove_quotes_if_any(i) == "NA":
+                values.append(0)
+                resolution_count_incrementer.append(0)
+            else:
+                values.append(float(i))
+                resolution_count_incrementer.append(1)
+
         sums[resolution] = np.add(sums[resolution], values)
-        resolution_count[resolution] += 1
+        resolution_count[resolution] = np.add(resolution_count[resolution], resolution_count_incrementer)
 
     # Write to file
     output_file = open(output_path, "w")
