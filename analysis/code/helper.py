@@ -190,10 +190,13 @@ def get_value_for_each_timestep(path, output_path):
     writer.writerow(["resolution"] + ["F" + str(i) for i in range(1, 49)])
 
     for resolution in resolutions:
-        number_of_this_resolution = resolution_count[resolution]
-        sum_values = sums[resolution]
-        averages = [i / number_of_this_resolution for i in sum_values]
-        writer.writerow([resolution] + averages)
+        resolution_average = []
+        for h in range(len(resolution_count[resolution])):
+            sum_values = sums[resolution][h]
+            number_of_this_resolution_horizon = resolution_count[resolution][h]
+            average = sum_values / number_of_this_resolution_horizon
+            resolution_average.append(average)
+        writer.writerow([resolution] + resolution_average)
 
 
 def resolution_timestep_graph(path, output_path, y_label):
