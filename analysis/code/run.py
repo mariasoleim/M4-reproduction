@@ -9,12 +9,12 @@ naive2_ASE = "../results/naive2/comparison-to-test-set/ASE.csv"
 compare_results_sAPE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_sAPE)
 # compare_results_ASE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_ASE)
 
-method_ids = ["069/malvik", "118/malvik", "245/malvik"]
+forecasts = ["069/malvik", "118/malvik", "245/malvik"]
 
-for method_id in method_ids:
-
+for forecast in forecasts:
+    method_id = forecast.split("/")[0]
     original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
-    result_path = "../results/" + method_id
+    result_path = "../results/" + forecast
     comparison_to_test_set_path = result_path + "/comparison-to-test-set"
     comparison_to_original_submission_path = result_path + "/comparison-to-original-submission"
     variation_path = result_path + "/variation"
@@ -22,7 +22,7 @@ for method_id in method_ids:
     # How equal are the reruns to the test set?
     for rerun in range(1, 6):
         rerun = str(rerun)
-        forecast_path = "../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv"
+        forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_test_set_path + "/rerun-" + rerun
         compare_results_sAPE(forecast_path, test_set_path, result_folder + "/sAPE.csv")
         # compare_results_ASE(forecast_path, test_set_path, result_folder + "/ASE.csv")
@@ -61,7 +61,7 @@ for method_id in method_ids:
     # How equal are the reruns to the original submission?
     for rerun in range(1, 6):
         rerun = str(rerun)
-        forecast_path = "../../forecasts/" + method_id + "/rerun-" + rerun + "/forecasts.csv"
+        forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_original_submission_path + "/rerun-" + rerun
         # Calculate the sAPE between a rerun and the original submission
         compare_results_sAPE(forecast_path, original_submission_path, result_folder + "/sAPE.csv")
@@ -83,7 +83,7 @@ for method_id in method_ids:
     resolution_timestep_graph(comparison_to_original_submission_path + "/sAPE-resolution-timestep.csv", comparison_to_original_submission_path + "/sAPE.png", "Average sAPE")
 
     # How equal are the reruns to each others?
-    reruns = ["../../forecasts/" + method_id + "/rerun-" + str(rerun) + "/forecasts.csv" for rerun in range(1, 6)]
+    reruns = ["../../forecasts/" + forecast + "/rerun-" + str(rerun) + "/forecasts.csv" for rerun in range(1, 6)]
     get_coefficient_of_variation(variation_path + "/coefficient-of-variation.csv", *reruns)
     get_average(variation_path + "/coefficient-of-variation.csv", variation_path + "/coefficient-of-variation-average.txt")
     get_value_for_each_timestep(variation_path + "/coefficient-of-variation.csv", variation_path + "/coefficient-of-variation-resolution-timestep.csv")
