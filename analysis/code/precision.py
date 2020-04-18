@@ -175,7 +175,7 @@ def calculate_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output
         id_3 = remove_quotes_if_any(series_3[0])
         id_4 = remove_quotes_if_any(series_4[0])
         if id_1 != id_2 or id_1 != id_3 or id_1 != id_4:
-            raise Exception("Series ids not matching")
+            raise Exception("Series ids not matching. Series ids was %s %s %s and %s" % (id_1, id_2, id_3, id_4))
         sAPE_values = series_1[1:]
         ASE_values = series_2[1:]
         naive2_sAPE_values = series_3[1:]
