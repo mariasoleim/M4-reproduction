@@ -1,6 +1,5 @@
 from helper import *
 import csv
-import numpy as np
 
 
 def sAPE(value_1, value_2):
@@ -226,28 +225,49 @@ def get_average_values_for_all_reruns(output_path, *input_files):
     writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
 
     reruns = []
-    for sAPE_file in input_files:
-        reruns.append(open(sAPE_file).read().split("\n"))
+    for file in input_files:
+        reruns.append(open(file).read().split("\n"))
 
     # For each time series
-    for i in range(1, len(reruns[0])):
+    for series_number in range(1, len(reruns[0])):
+
+        # Sometimes there might be an empty newline in the end of the file
+        if not reruns[0][series_number]:
+            break
 
         # Get the id of this series for the first rerun to later check that the id is equal for all reruns
-        series_id = reruns[0][i].split(",")[0]
+        series_id = reruns[0][series_number].split(",")[0]
 
-        # Sum up the values for all reruns
-        sum = [0] * (len(reruns[0][i].split(",")) - 1)
+        print(series_id)
+        horizon = get_horizon(series_id)
 
-        # For each rerun
-        for rerun in reruns:
-            series_id_this_rerun = rerun[i].split(",")[0]
+        averages = []
 
-            # Check that all the ids are equal
-            if series_id_this_rerun != series_id:
-                raise Exception("Series ids are not equal.")
+        # For each step in the horizon
+        for h in range(1, horizon + 1):
 
-            value = [float(sAPE) for sAPE in rerun[i].split(",")[1:]]
-            sum = np.add(sum, value)
+            sum = 0
 
-        average_values = np.divide(sum, len(input_files))
-        writer.writerow([series_id] + list(average_values))
+            # For each rerun
+            for rerun in reruns:
+                series_id_this_rerun = rerun[series_number].split(",")[0]
+
+                # Check that all the ids are equal
+                if series_id_this_rerun != series_id:
+                    raise Exception("Series ids are not equal.")
+
+                value = rerun[series_number].split(",")[h]
+
+                if value == "NA":
+                    sum = "NA"
+                    break
+                else:
+                    sum += float(value)
+
+            try:
+                average = sum / len(input_files)
+            except TypeError:
+                average = "NA"
+            averages.append(average)
+
+        writer.writerow([series_id] + averages)
