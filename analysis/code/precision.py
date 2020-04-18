@@ -13,7 +13,7 @@ def sAPE(value_1, value_2):
         result = 200.0 * abs((value_2 - value_1)) / (abs(value_2) + abs(value_1))
     except ZeroDivisionError:
         # The values are both zero and the sAPE is not defined
-        result = None
+        result = "NA"
     return result
 
 
@@ -46,7 +46,7 @@ def ASE(value_1, value_2, mean_absolute_scaled_error):
         result = absolute_error / mean_absolute_scaled_error
     except ZeroDivisionError:
         # ASE is not defined is this case
-        result = None
+        result = "NA"
     return result
 
 
@@ -238,7 +238,6 @@ def get_average_values_for_all_reruns(output_path, *input_files):
         # Get the id of this series for the first rerun to later check that the id is equal for all reruns
         series_id = reruns[0][series_number].split(",")[0]
 
-        print(series_id)
         horizon = get_horizon(series_id)
 
         averages = []
