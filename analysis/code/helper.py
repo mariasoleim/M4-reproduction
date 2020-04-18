@@ -166,7 +166,7 @@ def get_value_for_each_timestep(path, output_path):
     # Sum up the values for each timestep on each resolution
     for series_forecast in reader:
         # Sometimes there's a newline in the end of the file
-        if len(series_forecast) == 1:
+        if not series_forecast:
             break
         id = series_forecast[0]
         resolution = get_resolution(id)
