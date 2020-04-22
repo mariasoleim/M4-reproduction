@@ -131,6 +131,43 @@ def get_average(path, output_path):
     output_file.write(str(average))
 
 
+def get_average_each_series(path, output_path):
+    """
+    Given the path to a file with one value for each forecasted value for each time series, like the one
+    generated in compare_results. Calculates the average of all the values for each series.
+    :param path: String. Path to file
+    :param output_path: String. Path to file in which to write the result.
+    :return: Nothing
+    """
+    # Makes file ready to be written to
+    output_file = open(output_path, "w")
+    writer = csv.writer(output_file)
+    writer.writerow(["id", "value"])
+
+    reader = csv.reader(open(path))
+
+    # Skip header line
+    next(reader)
+
+    for series_forecast in reader:
+        series_id = series_forecast[0]
+        horizon = get_horizon(series_id)
+        values = series_forecast[1:horizon+1]
+        sum = 0
+        for value in values:
+            if value == "NA":
+                sum = "NA"
+                break
+            else:
+                sum += float(value)
+        try:
+            average = sum / horizon
+        except ValueError:
+            # Sum is not available
+            average = "NA"
+        writer.writerow([series_id, average])
+
+
 def get_value_for_each_timestep(path, output_path):
     """
     For each timestep ahead in time, calculate the average value for this timestep. Could for instance be the average of
