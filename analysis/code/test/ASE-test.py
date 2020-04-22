@@ -1,6 +1,6 @@
 import unittest
 
-from precision import ASE
+from precision import ASE, get_mean_absolute_scaled_error
 
 
 class TestASE(unittest.TestCase):
@@ -15,7 +15,8 @@ class TestASE(unittest.TestCase):
         value_2 = 3
         training_set = [2, 3, 4, 3, 4, 5]
         m = 5
-        result = ASE(value_1, value_2, training_set, m)
+        mean_absolute_scaled_error = get_mean_absolute_scaled_error(training_set, m)
+        result = ASE(value_1, value_2, mean_absolute_scaled_error)
         print("result:" + str(result))
         self.assertEqual(result, 5/3)
 
@@ -27,7 +28,8 @@ class TestASE(unittest.TestCase):
         value_2 = 3
         training_set = [2, 3, 4, 3, 4, 5]
         m = 5
-        result = ASE(value_1, value_2, training_set, m)
+        mean_absolute_scaled_error = get_mean_absolute_scaled_error(training_set, m)
+        result = ASE(value_1, value_2, mean_absolute_scaled_error)
         print("result:" + str(result))
         self.assertEqual(result, 2)
 
@@ -39,7 +41,8 @@ class TestASE(unittest.TestCase):
         value_2 = 4
         training_set = [2, 3, 4, 3, 4, 5]
         m = 5
-        result = ASE(value_1, value_2, training_set, m)
+        mean_absolute_scaled_error = get_mean_absolute_scaled_error(training_set, m)
+        result = ASE(value_1, value_2, mean_absolute_scaled_error)
         print("result:" + str(result))
         self.assertEqual(result, 4/3)
 
@@ -51,7 +54,8 @@ class TestASE(unittest.TestCase):
         value_2 = 7
         training_set = [2, 3, 4, 3, 4, 5]
         m = 2
-        result = ASE(value_1, value_2, training_set, m)
+        mean_absolute_scaled_error = get_mean_absolute_scaled_error(training_set, m)
+        result = ASE(value_1, value_2, mean_absolute_scaled_error)
         print("result:" + str(result))
         self.assertEqual(result, 1)
 
@@ -63,7 +67,8 @@ class TestASE(unittest.TestCase):
         value_2 = 9
         training_set = [2, 3, 4, 3, 4, 5]
         m = 2
-        result = ASE(value_1, value_2, training_set, m)
+        mean_absolute_scaled_error = get_mean_absolute_scaled_error(training_set, m)
+        result = ASE(value_1, value_2, mean_absolute_scaled_error)
         print("result:" + str(result))
         self.assertEqual(result, 3)
 
@@ -75,7 +80,8 @@ class TestASE(unittest.TestCase):
         value_2 = 0.8
         training_set = [2, 3, 4, 3, 4, 5]
         m = 2
-        result = ASE(value_1, value_2, training_set, m)
+        mean_absolute_scaled_error = get_mean_absolute_scaled_error(training_set, m)
+        result = ASE(value_1, value_2, mean_absolute_scaled_error)
         print("result:" + str(result))
         self.assertAlmostEqual(result, 0.33)
 
