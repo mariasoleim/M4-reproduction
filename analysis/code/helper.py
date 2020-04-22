@@ -1,9 +1,11 @@
 import csv
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import os
+import pandas as pd
 
 resolutions = ["Yearly", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly"]
+origins = ["Demographic", "Finance", "Industry", "Macro", "Micro", "Other"]
 
 resolution_count = {
     "Yearly": 23000,
@@ -71,6 +73,13 @@ def get_resolution(id):
     for resolution in resolutions:
         if resolution[0] == id[0]:
             return resolution
+
+
+def get_origin(id):
+    id = remove_quotes_if_any(id)
+    info_file = pd.read_csv("../../data/M4-info.csv", index_col=0)
+    origin = info_file.loc[id, "category"]
+    return origin
 
 
 def get_frequency(id):
@@ -166,6 +175,74 @@ def get_average_each_series(path, output_path):
             # Sum is not available
             average = "NA"
         writer.writerow([series_id, average])
+
+
+def get_average_resolution_origin(path, output_path):
+    """
+    Takes in a path to a file with one value for each series such as the one created in get_average_each_series().
+    For each combination of resolution and origin, calculates the average value for all the series in that category.
+    :param path: String. Path to file with one value for each series.
+    :param output_path: String. Where to write the result.
+    :return: Nothing.
+    """
+    # A dataframe is created to keep track of the values for the different resolutions and origins
+    all_values = pd.DataFrame(index=resolutions, columns=origins)
+
+    # The data frame is filled with empty lists
+    for resolution in resolutions:
+        for origin in origins:
+            all_values.at[resolution, origin] = []
+
+    # Each series' value is put in the correct field in the dataframe
+    reader = csv.reader(open(path))
+    next(reader)  # Skip the header line
+    for series in reader:
+        series_id = series[0]
+        resolution = get_resolution(series_id)
+        origin = get_origin(series_id)
+        value = series[1]
+        list = all_values.loc[resolution, origin]
+        list.append(float(value))
+
+    # A dataframe for the final result is created
+    # For all combinations of resolutions and origins, the average is calculated and written to the result
+    result = pd.DataFrame(index=resolutions + ["Total"], columns=origins + ["Total"])
+    for resolution in resolutions:
+        for origin in origins:
+            values = all_values.loc[resolution, origin]
+            try:
+                average = sum(values) / len(values)
+            except ZeroDivisionError:
+                # There are no time series with this resolution and origin
+                average = "NA"
+            result.at[resolution, origin] = average
+
+    # For all resolutions, the average value for that resolution is calculated and written to the result
+    for resolution in resolutions:
+        values = []
+        for origin in origins:
+            values = values + all_values.loc[resolution, origin]
+        average = sum(values) / len(values)
+        result.at[resolution, "Total"] = average
+
+    # For all origins, the average value for that resolution is calculated and written to the result
+    for origin in origins:
+        values = []
+        for resolution in resolutions:
+            values = values + all_values.loc[resolution, origin]
+        average = sum(values) / len(values)
+        result.at["Total", origin] = average
+
+    # The average of all values is calculated and written to the result
+    values = []
+    for resolution in resolutions:
+        for origin in origins:
+            values = values + all_values.loc[resolution, origin]
+    average = sum(values) / len(values)
+    result.at["Total", "Total"] = average
+
+    # Write the final result to file
+    result.to_csv(output_path)
 
 
 def get_value_for_each_timestep(path, output_path):
