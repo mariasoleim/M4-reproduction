@@ -433,55 +433,25 @@ def get_average_values_for_all_reruns(output_path, *input_files):
     :return: Writes a file to output_path of the same format like the *input_files. In every field in the new file is
     the average of the corresponding fields in the input_files.
     """
-
-    # Creates an output file for the final result
-    output_file = open(output_path, "w")
-    writer = csv.writer(output_file)
-    writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
-
+    # Write the different files to dataframes
     reruns = []
     for file in input_files:
-        reruns.append(open(file).read().split("\n"))
+        reruns.append(pd.read_csv(file))
 
-    # For each time series
-    for series_number in range(1, len(reruns[0])):
+    index = reruns[0].index.values
+    columns = reruns[0].columns.values
 
-        # Sometimes there might be an empty newline in the end of the file
-        if not reruns[0][series_number]:
-            break
+    # Creates an output file for the final result
+    result_df = pd.DataFrame(index=index, columns=columns)
 
-        # Get the id of this series for the first rerun to later check that the id is equal for all reruns
-        series_id = reruns[0][series_number].split(",")[0]
-
-        horizon = get_horizon(series_id)
-
-        averages = []
-
-        # For each step in the horizon
-        for h in range(1, horizon + 1):
-
-            sum = 0
-
-            # For each rerun
+    # Calculate the average of the reruns for each entry
+    for i in index:
+        for c in columns:
+            values = []
             for rerun in reruns:
-                series_id_this_rerun = rerun[series_number].split(",")[0]
+                values.append(rerun.loc[i, c])
+            average = sum(values) / len(values)
+            result_df.at[i, c] = average
 
-                # Check that all the ids are equal
-                if series_id_this_rerun != series_id:
-                    raise Exception("Series ids are not equal.")
-
-                value = rerun[series_number].split(",")[h]
-
-                if value == "NA":
-                    sum = "NA"
-                    break
-                else:
-                    sum += float(value)
-
-            try:
-                average = sum / len(input_files)
-            except TypeError:
-                average = "NA"
-            averages.append(average)
-
-        writer.writerow([series_id] + averages)
+    # Write to csv
+    result_df.to_csv(output_path)
