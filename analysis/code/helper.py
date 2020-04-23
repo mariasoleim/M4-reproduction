@@ -77,9 +77,90 @@ def get_resolution(id):
 
 def get_origin(id):
     id = remove_quotes_if_any(id)
-    info_file = pd.read_csv("../../data/M4-info.csv", index_col=0)
-    origin = info_file.loc[id, "category"]
-    return origin
+    resolution_letter = id[0]
+    number = int(id[1:])
+    if resolution_letter == "Y":
+        if 1 <= number <= 3903:
+            return "Macro"
+        elif 3904 <= number <= 10441:
+            return "Micro"
+        elif 10442 <= number <= 11529:
+            return "Demographic"
+        elif 11530 <= number <= 15245:
+            return "Industry"
+        elif 15246 <= number <= 21764:
+            return "Finance"
+        elif 21765 <= number <= 23000:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "Q":
+        if 1 <= number <= 5315:
+            return "Macro"
+        elif 5216 <= number <= 11335:
+            return "Micro"
+        elif 11336 <= number <= 13193:
+            return "Demographic"
+        elif 13194 <= number <= 17830:
+            return "Industry"
+        elif 17831 <= number <= 23135:
+            return "Finance"
+        elif 21136 <= number <= 24000:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "M":
+        if 1 <= number <= 10016:
+            return "Macro"
+        elif 10017 <= number <= 20991:
+            return "Micro"
+        elif 20992 <= number <= 26719:
+            return "Demographic"
+        elif 26720 <= number <= 36736:
+            return "Industry"
+        elif 36737 <= number <= 47723:
+            return "Finance"
+        elif 47724 <= number <= 48000:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "W":
+        if 1 <= number <= 12:
+            return "Other"
+        elif 13 <= number <= 53:
+            return "Macro"
+        elif 54 <= number <= 59:
+            return "Industry"
+        elif 60 <= number <= 223:
+            return "Finance"
+        elif 224 <= number <= 247:
+            return "Demographic"
+        elif 248 <= number <= 359:
+            return "Micro"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "D":
+        if 1 <= number <= 127:
+            return "Macro"
+        elif 128 <= number <= 1603:
+            return "Micro"
+        elif 1604 <= number <= 1613:
+            return "Demographic"
+        elif 1614 <= number <= 2035:
+            return "Industry"
+        elif 2036 <= number <= 3594:
+            return "Finance"
+        elif 3595 <= number <= 4227:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "H":
+        if 1 <= number <= 414:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    else:
+        raise Exception("This id does not exist: " + resolution_letter + str(number))
 
 
 def get_frequency(id):
