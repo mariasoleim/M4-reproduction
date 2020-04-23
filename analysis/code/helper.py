@@ -252,7 +252,7 @@ def get_average_each_series(path, output_path):
                 sum += float(value)
         try:
             average = sum / horizon
-        except ValueError:
+        except TypeError:
             # Sum is not available
             average = "NA"
         writer.writerow([series_id, average])
@@ -283,7 +283,11 @@ def get_average_resolution_origin(path, output_path):
         origin = get_origin(series_id)
         value = series[1]
         list = all_values.loc[resolution, origin]
-        list.append(float(value))
+        try:
+            list.append(float(value))
+        except ValueError:
+            # Value may not be available
+            pass
 
     # A dataframe for the final result is created
     # For all combinations of resolutions and origins, the average is calculated and written to the result
@@ -435,7 +439,7 @@ def get_average_values_for_all_reruns(output_path, input_files):
     # Write the different files to dataframes
     reruns = []
     for file in input_files:
-        reruns.append(pd.read_csv(file))
+        reruns.append(pd.read_csv(file, index_col=0))
 
     index = reruns[0].index.values
     columns = reruns[0].columns.values
