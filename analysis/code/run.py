@@ -7,56 +7,50 @@ test_set_path = "../../data/test/all.csv"
 naive2_sAPE = "../results/naive2/comparison-to-test-set/sAPE.csv"
 naive2_ASE = "../results/naive2/comparison-to-test-set/ASE.csv"
 compare_results_sAPE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_sAPE)
-# compare_results_ASE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_ASE)
+compare_results_ASE("../../forecasts/naive2/submission-Naive2.csv", test_set_path, naive2_ASE)
+get_average_each_series("../results/naive2/comparison-to-test-set/sAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE.csv")
+get_average_each_series("../results/naive2/comparison-to-test-set/ASE.csv", "../results/naive2/comparison-to-test-set/MASE.csv")
+get_average_resolution_origin("../results/naive2/comparison-to-test-set/sMAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv")
+get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv", "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv")
 
 forecasts = ["069/malvik", "118/malvik", "245/malvik"]
 
 for forecast in forecasts:
+    print(forecast)
     method_id = forecast.split("/")[0]
     original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
     result_path = "../results/" + forecast
-    comparison_to_test_set_path = result_path + "/comparison-to-test-set"
+    comparison_to_test_set_path = result_path + "/comparison-to-test-set/"
     comparison_to_original_submission_path = result_path + "/comparison-to-original-submission"
     variation_path = result_path + "/variation"
 
     # How equal are the reruns to the test set?
     for rerun in range(1, 6):
+        print(rerun)
         rerun = str(rerun)
-        forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
-        result_folder = comparison_to_test_set_path + "/rerun-" + rerun
-        compare_results_sAPE(forecast_path, test_set_path, result_folder + "/sAPE.csv")
+        # forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
+        result_folder = comparison_to_test_set_path + "rerun-" + rerun + "/"
+        # compare_results_sAPE(forecast_path, test_set_path, result_folder + "/sAPE.csv")
         # compare_results_ASE(forecast_path, test_set_path, result_folder + "/ASE.csv")
-        calculate_OWA(result_folder + "/sAPE.csv", result_folder + "/ASE.csv", naive2_sAPE, naive2_ASE, result_folder + "/OWA.csv")
 
-        get_average(result_folder + "/sAPE.csv", result_folder + "/sAPE-average.txt")
-        get_average(result_folder + "/ASE.csv", result_folder + "/ASE-average.txt")
-        get_average(result_folder + "/OWA.csv", result_folder + "/OWA-average.txt")
+        get_value_for_each_timestep(result_folder + "sAPE.csv", result_folder + "sAPE-resolution-timestep.csv")
+        get_value_for_each_timestep(result_folder + "ASE.csv", result_folder + "ASE-resolution-timestep.csv")
 
-        get_value_for_each_timestep(result_folder + "/sAPE.csv", result_folder + "/sAPE-resolution-timestep.csv")
-        get_value_for_each_timestep(result_folder + "/ASE.csv", result_folder + "/ASE-resolution-timestep.csv")
-        get_value_for_each_timestep(result_folder + "/OWA.csv", result_folder + "/OWA-resolution-timestep.csv")
+        resolution_timestep_graph(result_folder + "sAPE-resolution-timestep.csv", result_folder + "sAPE.png", "Average sAPE")
+        resolution_timestep_graph(result_folder + "ASE-resolution-timestep.csv", result_folder + "ASE.png", "Average ASE")
 
-        resolution_timestep_graph(result_folder + "/sAPE-resolution-timestep.csv", result_folder + "/sAPE.png", "Average sAPE")
-        resolution_timestep_graph(result_folder + "/ASE-resolution-timestep.csv", result_folder + "/ASE.png", "Average ASE")
-        resolution_timestep_graph(result_folder + "/OWA-resolution-timestep.csv", result_folder + "/OWA.png", "Average OWA")
+        get_average_each_series(result_folder + "sAPE.csv", result_folder + "sMAPE.csv")
+        get_average_each_series(result_folder + "ASE.csv", result_folder + "MASE.csv")
 
-    sAPE_paths = [comparison_to_test_set_path + "/rerun-" + str(rerun) + "/sAPE.csv" for rerun in range(1, 6)]
-    get_average_values_for_all_reruns(comparison_to_test_set_path + "/sAPE.csv", *sAPE_paths)
-    get_average(comparison_to_test_set_path + "/sAPE.csv", comparison_to_test_set_path + "/sAPE-average.txt")
-    get_value_for_each_timestep(comparison_to_test_set_path + "/sAPE.csv", comparison_to_test_set_path + "/sAPE-resolution-timestep.csv")
-    resolution_timestep_graph(comparison_to_test_set_path + "/sAPE-resolution-timestep.csv", comparison_to_test_set_path + "/sAPE.png", "Average sAPE")
+        get_average_resolution_origin(result_folder + "sMAPE.csv", result_folder + "sMAPE-resolution-origin.csv")
+        get_average_resolution_origin(result_folder + "MASE.csv", result_folder + "MASE-resolution-origin.csv")
 
-    ASE_paths = [comparison_to_test_set_path + "/rerun-" + str(rerun) + "/ASE.csv" for rerun in range(1, 6)]
-    get_average_values_for_all_reruns(comparison_to_test_set_path + "/ASE.csv", *ASE_paths)
-    get_average(comparison_to_test_set_path + "/ASE.csv", comparison_to_test_set_path + "/ASE-average.txt")
-    get_value_for_each_timestep(comparison_to_test_set_path + "/ASE.csv", comparison_to_test_set_path + "/ASE-resolution-timestep.csv")
-    resolution_timestep_graph(comparison_to_test_set_path + "/ASE-resolution-timestep.csv", comparison_to_test_set_path + "/ASE.png", "Average ASE")
+        calculate_OWA(result_folder + "sMAPE-resolution-origin.csv", result_folder + "MASE-resolution-origin.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv",
+                      "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv", result_folder + "OWA-resolution-origin.csv")
 
-    OWA_paths = [comparison_to_test_set_path + "/rerun-" + str(rerun) + "/OWA.csv" for rerun in range(1, 6)]
-    get_average_values_for_all_reruns(comparison_to_test_set_path + "/OWA.csv", *OWA_paths)
-    get_average(comparison_to_test_set_path + "/OWA.csv", comparison_to_test_set_path + "/OWA-average.txt")
-    get_value_for_each_timestep(comparison_to_test_set_path + "/OWA.csv", comparison_to_test_set_path + "/OWA-resolution-timestep.csv")
-    resolution_timestep_graph(comparison_to_test_set_path + "/OWA-resolution-timestep.csv", comparison_to_test_set_path + "/OWA.png", "Average OWA")
+    OWA_paths = [comparison_to_test_set_path + "rerun-" + str(rerun) + "/OWA-resolution-origin.csv" for rerun in range(1, 6)]
+    get_average_values_for_all_reruns(comparison_to_test_set_path + "OWA-average.csv", OWA_paths)
+
 
     # How equal are the reruns to the original submission?
     for rerun in range(1, 6):
