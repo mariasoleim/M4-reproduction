@@ -27,16 +27,20 @@ def get_coefficient_of_variation(output_path, *files):
     # For each time series
     for series in range(1, len(reruns[0])):
 
+        # Sometimes there's a newline in the end of the file
+        if len(reruns[0][series].split(",")) == 1:
+            break
+
         # Get the id of this series for the first rerun to later check that the id is equal for all reruns
         series_id = reruns[0][series].split(",")[0]
 
-        horizon = [i for i in reruns[0][series].split(",")[1:] if i != "" and i != "NA"]
+        horizon = get_horizon(series_id)
 
         # Creating a list for saving the coefficients of variation for this series
         coefficients_of_variation = []
 
         # For each step in the forecasting horizon
-        for step in range(1, len(horizon) + 1):
+        for step in range(1, horizon + 1):
 
             # Save the different forecasts in a list to later find the coefficient of variation between them
             predicted_values = []
@@ -50,15 +54,17 @@ def get_coefficient_of_variation(output_path, *files):
                     raise Exception("Series ids are not equal.")
 
                 # Add the forecast
-                predicted_value = float(rerun[series].split(",")[step])
+                try:
+                    predicted_value = float(rerun[series].split(",")[step])
+                except ValueError:
+                    predicted_value = "NA"
                 predicted_values.append(predicted_value)
-
             try:
                 coefficient_of_variation = stdev(predicted_values) / mean(predicted_values)
-            except ZeroDivisionError:
-                # The mean is zero and the coefficient of variation is not really defined. Since they are equal, we set
-                # it to zero.
-                coefficient_of_variation = 0
+            except (ZeroDivisionError, TypeError):
+                # ZeroDivisionError: The mean is zero and the coefficient of variation is not defined
+                # TypeError: Some or all values are not available
+                coefficient_of_variation = "NA"
             coefficients_of_variation.append(coefficient_of_variation)
 
         # Write the coefficients of variation for the given series to file

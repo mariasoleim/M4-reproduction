@@ -1,9 +1,11 @@
 import csv
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import os
+import pandas as pd
 
 resolutions = ["Yearly", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly"]
+origins = ["Demographic", "Finance", "Industry", "Macro", "Micro", "Other"]
 
 resolution_count = {
     "Yearly": 23000,
@@ -73,9 +75,102 @@ def get_resolution(id):
             return resolution
 
 
+def get_origin(id):
+    id = remove_quotes_if_any(id)
+    resolution_letter = id[0]
+    number = int(id[1:])
+    if resolution_letter == "Y":
+        if 1 <= number <= 3903:
+            return "Macro"
+        elif 3904 <= number <= 10441:
+            return "Micro"
+        elif 10442 <= number <= 11529:
+            return "Demographic"
+        elif 11530 <= number <= 15245:
+            return "Industry"
+        elif 15246 <= number <= 21764:
+            return "Finance"
+        elif 21765 <= number <= 23000:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "Q":
+        if 1 <= number <= 5315:
+            return "Macro"
+        elif 5216 <= number <= 11335:
+            return "Micro"
+        elif 11336 <= number <= 13193:
+            return "Demographic"
+        elif 13194 <= number <= 17830:
+            return "Industry"
+        elif 17831 <= number <= 23135:
+            return "Finance"
+        elif 21136 <= number <= 24000:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "M":
+        if 1 <= number <= 10016:
+            return "Macro"
+        elif 10017 <= number <= 20991:
+            return "Micro"
+        elif 20992 <= number <= 26719:
+            return "Demographic"
+        elif 26720 <= number <= 36736:
+            return "Industry"
+        elif 36737 <= number <= 47723:
+            return "Finance"
+        elif 47724 <= number <= 48000:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "W":
+        if 1 <= number <= 12:
+            return "Other"
+        elif 13 <= number <= 53:
+            return "Macro"
+        elif 54 <= number <= 59:
+            return "Industry"
+        elif 60 <= number <= 223:
+            return "Finance"
+        elif 224 <= number <= 247:
+            return "Demographic"
+        elif 248 <= number <= 359:
+            return "Micro"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "D":
+        if 1 <= number <= 127:
+            return "Macro"
+        elif 128 <= number <= 1603:
+            return "Micro"
+        elif 1604 <= number <= 1613:
+            return "Demographic"
+        elif 1614 <= number <= 2035:
+            return "Industry"
+        elif 2036 <= number <= 3594:
+            return "Finance"
+        elif 3595 <= number <= 4227:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    elif resolution_letter == "H":
+        if 1 <= number <= 414:
+            return "Other"
+        else:
+            raise Exception("This id does not exist: " + resolution_letter + str(number))
+    else:
+        raise Exception("This id does not exist: " + resolution_letter + str(number))
+
+
 def get_frequency(id):
     resolution = get_resolution(id)
     return frequency[resolution]
+
+
+def get_horizon(id):
+    resolution = get_resolution(id)
+    return horizon[resolution]
 
 
 def get_training_values(id):
@@ -126,6 +221,115 @@ def get_average(path, output_path):
     output_file.write(str(average))
 
 
+def get_average_each_series(path, output_path):
+    """
+    Given the path to a file with one value for each forecasted value for each time series, like the one
+    generated in compare_results. Calculates the average of all the values for each series.
+    :param path: String. Path to file
+    :param output_path: String. Path to file in which to write the result.
+    :return: Nothing
+    """
+    # Makes file ready to be written to
+    output_file = open(output_path, "w")
+    writer = csv.writer(output_file)
+    writer.writerow(["id", "value"])
+
+    reader = csv.reader(open(path))
+
+    # Skip header line
+    next(reader)
+
+    for series_forecast in reader:
+        series_id = series_forecast[0]
+        horizon = get_horizon(series_id)
+        values = series_forecast[1:horizon+1]
+        sum = 0
+        for value in values:
+            if value == "NA":
+                sum = "NA"
+                break
+            else:
+                sum += float(value)
+        try:
+            average = sum / horizon
+        except TypeError:
+            # Sum is not available
+            average = "NA"
+        writer.writerow([series_id, average])
+
+
+def get_average_resolution_origin(path, output_path):
+    """
+    Takes in a path to a file with one value for each series such as the one created in get_average_each_series().
+    For each combination of resolution and origin, calculates the average value for all the series in that category.
+    :param path: String. Path to file with one value for each series.
+    :param output_path: String. Where to write the result.
+    :return: Nothing.
+    """
+    # A dataframe is created to keep track of the values for the different resolutions and origins
+    all_values = pd.DataFrame(index=resolutions, columns=origins)
+
+    # The data frame is filled with empty lists
+    for resolution in resolutions:
+        for origin in origins:
+            all_values.at[resolution, origin] = []
+
+    # Each series' value is put in the correct field in the dataframe
+    reader = csv.reader(open(path))
+    next(reader)  # Skip the header line
+    for series in reader:
+        series_id = series[0]
+        resolution = get_resolution(series_id)
+        origin = get_origin(series_id)
+        value = series[1]
+        list = all_values.loc[resolution, origin]
+        try:
+            list.append(float(value))
+        except ValueError:
+            # Value may not be available
+            pass
+
+    # A dataframe for the final result is created
+    # For all combinations of resolutions and origins, the average is calculated and written to the result
+    result = pd.DataFrame(index=resolutions + ["Total"], columns=origins + ["Total"])
+    for resolution in resolutions:
+        for origin in origins:
+            values = all_values.loc[resolution, origin]
+            try:
+                average = sum(values) / len(values)
+            except ZeroDivisionError:
+                # There are no time series with this resolution and origin
+                average = "NA"
+            result.at[resolution, origin] = average
+
+    # For all resolutions, the average value for that resolution is calculated and written to the result
+    for resolution in resolutions:
+        values = []
+        for origin in origins:
+            values = values + all_values.loc[resolution, origin]
+        average = sum(values) / len(values)
+        result.at[resolution, "Total"] = average
+
+    # For all origins, the average value for that resolution is calculated and written to the result
+    for origin in origins:
+        values = []
+        for resolution in resolutions:
+            values = values + all_values.loc[resolution, origin]
+        average = sum(values) / len(values)
+        result.at["Total", origin] = average
+
+    # The average of all values is calculated and written to the result
+    values = []
+    for resolution in resolutions:
+        for origin in origins:
+            values = values + all_values.loc[resolution, origin]
+    average = sum(values) / len(values)
+    result.at["Total", "Total"] = average
+
+    # Write the final result to file
+    result.to_csv(output_path)
+
+
 def get_value_for_each_timestep(path, output_path):
     """
     For each timestep ahead in time, calculate the average value for this timestep. Could for instance be the average of
@@ -150,12 +354,12 @@ def get_value_for_each_timestep(path, output_path):
     }
 
     resolution_count = {
-        "Yearly": 0,
-        "Quarterly": 0,
-        "Monthly": 0,
-        "Weekly": 0,
-        "Daily": 0,
-        "Hourly": 0
+        "Yearly": [0] * 6,
+        "Quarterly": [0] * 8,
+        "Monthly": [0] * 18,
+        "Weekly": [0] * 13,
+        "Daily": [0] * 14,
+        "Hourly": [0] * 48
     }
 
     # Sum up the values for each timestep on each resolution
@@ -165,9 +369,19 @@ def get_value_for_each_timestep(path, output_path):
             break
         id = series_forecast[0]
         resolution = get_resolution(id)
-        values = [float(i) for i in series_forecast[1:] if i != "NA" or i != ""]
+        horizon = get_horizon(id)
+        values = []
+        resolution_count_incrementer = []
+        for i in series_forecast[1:horizon + 1]:
+            if remove_quotes_if_any(i) == "NA":
+                values.append(0)
+                resolution_count_incrementer.append(0)
+            else:
+                values.append(float(i))
+                resolution_count_incrementer.append(1)
+
         sums[resolution] = np.add(sums[resolution], values)
-        resolution_count[resolution] += 1
+        resolution_count[resolution] = np.add(resolution_count[resolution], resolution_count_incrementer)
 
     # Write to file
     output_file = open(output_path, "w")
@@ -175,10 +389,13 @@ def get_value_for_each_timestep(path, output_path):
     writer.writerow(["resolution"] + ["F" + str(i) for i in range(1, 49)])
 
     for resolution in resolutions:
-        number_of_this_resolution = resolution_count[resolution]
-        sum_values = sums[resolution]
-        averages = [i / number_of_this_resolution for i in sum_values]
-        writer.writerow([resolution] + averages)
+        resolution_average = []
+        for h in range(len(resolution_count[resolution])):
+            sum_values = sums[resolution][h]
+            number_of_this_resolution_horizon = resolution_count[resolution][h]
+            average = sum_values / number_of_this_resolution_horizon
+            resolution_average.append(average)
+        writer.writerow([resolution] + resolution_average)
 
 
 def resolution_timestep_graph(path, output_path, y_label):
@@ -207,3 +424,37 @@ def resolution_timestep_graph(path, output_path, y_label):
     plt.legend(loc='best')
     plt.savefig(output_path)
     plt.clf()
+
+
+def get_average_values_for_all_reruns(output_path, input_files):
+    """
+    Given a set of files containing values (for instance sMAPE values), creates a new file giving the average values of
+    every entry in those files.
+    :param output_path: String. Path to write the output file.
+    :param input_files: List of strings. Each element in the list is a string with a path to a csv file containing values (for instance sAPE values) for all timesteps and all series between two
+    forecasts (or a forecast and a test set). This kind of file can be generated by get_average_resolution_origin()
+    :return: Writes a file to output_path of the same format like the input_files. In every field in the new file is
+    the average of the corresponding fields in the input_files.
+    """
+    # Write the different files to dataframes
+    reruns = []
+    for file in input_files:
+        reruns.append(pd.read_csv(file, index_col=0))
+
+    index = reruns[0].index.values
+    columns = reruns[0].columns.values
+
+    # Creates an output file for the final result
+    result_df = pd.DataFrame(index=index, columns=columns)
+
+    # Calculate the average of the reruns for each entry
+    for i in index:
+        for c in columns:
+            values = []
+            for rerun in reruns:
+                values.append(rerun.loc[i, c])
+            average = sum(values) / len(values)
+            result_df.at[i, c] = average
+
+    # Write to csv
+    result_df.to_csv(output_path)

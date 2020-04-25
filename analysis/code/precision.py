@@ -1,6 +1,6 @@
 from helper import *
 import csv
-import numpy as np
+import math
 
 
 def sAPE(value_1, value_2):
@@ -14,7 +14,7 @@ def sAPE(value_1, value_2):
         result = 200.0 * abs((value_2 - value_1)) / (abs(value_2) + abs(value_1))
     except ZeroDivisionError:
         # The values are both zero and the sAPE is not defined
-        result = None
+        result = "NA"
     return result
 
 
@@ -47,7 +47,7 @@ def ASE(value_1, value_2, mean_absolute_scaled_error):
         result = absolute_error / mean_absolute_scaled_error
     except ZeroDivisionError:
         # ASE is not defined is this case
-        result = None
+        result = "NA"
     return result
 
 
@@ -83,12 +83,15 @@ def compare_results_sAPE(file_1, file_2, output_path):
         # Store error between the two forecasts for this series
         errors = [id_1]
 
-        for j in range(len(series_forecast_1)):
-            if series_forecast_1[j] == "NA" or series_forecast_1[j] == "":
-                break
-            value_1 = float(series_forecast_1[j])
-            value_2 = float(series_forecast_2[j])
-            error = sAPE(value_1, value_2)
+        horizon = get_horizon(id_1)
+        for j in range(horizon):
+            # A model might not have been able to predict a value
+            if series_forecast_1[j] == "NA" or series_forecast_2[j] == "NA":
+                error = "NA"
+            else:
+                value_1 = float(series_forecast_1[j])
+                value_2 = float(series_forecast_2[j])
+                error = sAPE(value_1, value_2)
             errors.append(error)
 
         writer.writerow(errors)
@@ -132,121 +135,50 @@ def compare_results_ASE(file_1, file_2, output_path):
         # Store error between the two forecasts for this series
         errors = [id_1]
 
-        for j in range(len(series_forecast_1)):
-            if series_forecast_1[j] == "NA" or series_forecast_1[j] == "":
-                break
-            value_1 = float(series_forecast_1[j])
-            value_2 = float(series_forecast_2[j])
-            error = ASE(value_1, value_2, mean_seasonal_naive_error)
+        horizon = get_horizon(id_1)
+        for j in range(horizon):
+            # A model might not have been able to predict a value
+            if series_forecast_1[j] == "NA" or series_forecast_2[j] == "NA":
+                error = "NA"
+            else:
+                value_1 = float(series_forecast_1[j])
+                value_2 = float(series_forecast_2[j])
+                error = ASE(value_1, value_2, mean_seasonal_naive_error)
             errors.append(error)
 
         writer.writerow(errors)
 
 
-def calculate_OWA(sAPE_file, ASE_file, naive2_sAPE_file, naive2_ASE_file, output_path):
+def calculate_OWA(sMAPE_df, MASE_df, naive2_sMAPE_df, naive2_MASE_df, output_path):
     """
-    Calculate OWI between all values.
+    Calculate OWA between two files with sMAPE and MASE values.
     :return: Nothing. Writes a file to output_path.
     """
-    sAPE_file = open(sAPE_file).read().split("\n")
-    ASE_file = open(ASE_file).read().split("\n")
-    naive2_sAPE_file = open(naive2_sAPE_file).read().split("\n")
-    naive2_ASE_file = open(naive2_ASE_file).read().split("\n")
+    sMAPE_df = pd.read_csv(sMAPE_df, index_col=0)
+    MASE_df = pd.read_csv(MASE_df, index_col=0)
+    naive2_sMAPE_df = pd.read_csv(naive2_sMAPE_df, index_col=0)
+    naive2_MASE_df = pd.read_csv(naive2_MASE_df, index_col=0)
+
+    result = pd.DataFrame(index=resolutions + ["Total"], columns=origins + ["Total"])
+
+    for row in result.index.values:
+        for col in result.columns.values:
+            sMAPE = sMAPE_df.loc[row, col]
+            MASE = MASE_df.loc[row, col]
+            naive2_sMAPE = naive2_sMAPE_df.loc[row, col]
+            naive2_MASE = naive2_MASE_df.loc[row, col]
+
+            relative_sMAPE = sMAPE / naive2_sMAPE
+            relative_MASE = MASE / naive2_MASE
+
+            OWA = 0.5 * (relative_sMAPE + relative_MASE)
+
+            if math.isnan(OWA):
+                OWA = "NA"
+
+            result.at[row, col] = OWA
 
     # Create folders if they don't already exists and create an output file
     folders_path = remove_file_from_path(output_path)
     create_path_if_not_exists(folders_path)
-    output_file = open(output_path, "w")
-    writer = csv.writer(output_file)
-    writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
-
-    for series_number in range(1, len(sAPE_file) - 1):
-        series_1 = sAPE_file[series_number].split(",")
-        series_2 = ASE_file[series_number].split(",")
-        series_3 = naive2_sAPE_file[series_number].split(",")
-        series_4 = naive2_ASE_file[series_number].split(",")
-        id_1 = remove_quotes_if_any(series_1[0])
-        id_2 = remove_quotes_if_any(series_2[0])
-        id_3 = remove_quotes_if_any(series_3[0])
-        id_4 = remove_quotes_if_any(series_4[0])
-        if id_1 != id_2 or id_1 != id_3 or id_1 != id_4:
-            raise Exception("Series ids not matching")
-        sAPE_values = series_1[1:]
-        ASE_values = series_2[1:]
-        naive2_sAPE_values = series_3[1:]
-        naive2_ASE_values = series_4[1:]
-
-        OWA_values = [id_1]
-
-        for j in range(len(sAPE_values)):
-            if sAPE_values[j] == "NA" or sAPE_values[j] == "":
-                break
-            sAPE_value = float(sAPE_values[j])
-            ASE_value = float(ASE_values[j])
-            naive2_sAPE_value = float(naive2_sAPE_values[j])
-            naive2_ASE_value = float(naive2_ASE_values[j])
-
-            try:
-                relative_sAPE = sAPE_value / naive2_sAPE_value
-            except (ZeroDivisionError, TypeError):
-                # ZeroDivisionError: Naive2 sAPE is zero (naive2 predicts the correct test value)
-                # TypeError: Either the sAPE or the naive2 sAPE is not defined
-                relative_sAPE = None
-            try:
-                relative_ASE = ASE_value / naive2_ASE_value
-            except (ZeroDivisionError, TypeError):
-                # ZeroDivisionError: Naive2 ASE is zero (naive2 predicts the correct test value)
-                # TypeError: Either the ASE or the naive2 ASE is not defined
-                relative_ASE = None
-            try:
-                OWA = (relative_sAPE + relative_ASE) / 2
-            except TypeError:
-                OWA = None
-            OWA_values.append(OWA)
-
-        writer.writerow(OWA_values)
-
-
-def get_average_values_for_all_reruns(output_path, *input_files):
-    """
-    Given a set of files containing values (for instance sAPE values), creates a new file giving the average values of
-    every entry in those files.
-    :param output_path: String. Path to write the output file.
-    :param input_files: Each argument is a string with a path to a csv file containing values (for instance sAPE values)
-    for all timesteps and all series between two forecasts (or a forecast and a test set). This kind of file cat be
-    generated by compare_results()
-    :return: Writes a file to output_path of the same format like the *input_files. In every field in the new file is
-    the average of the corresponding fields in the input_files.
-    """
-
-    # Creates an output file for the final result
-    output_file = open(output_path, "w")
-    writer = csv.writer(output_file)
-    writer.writerow(["id"] + ["F" + str(i) for i in range(1, 49)])
-
-    reruns = []
-    for sAPE_file in input_files:
-        reruns.append(open(sAPE_file).read().split("\n"))
-
-    # For each time series
-    for i in range(1, len(reruns[0])):
-
-        # Get the id of this series for the first rerun to later check that the id is equal for all reruns
-        series_id = reruns[0][i].split(",")[0]
-
-        # Sum up the values for all reruns
-        sum = [0] * (len(reruns[0][i].split(",")) - 1)
-
-        # For each rerun
-        for rerun in reruns:
-            series_id_this_rerun = rerun[i].split(",")[0]
-
-            # Check that all the ids are equal
-            if series_id_this_rerun != series_id:
-                raise Exception("Series ids are not equal.")
-
-            value = [float(sAPE) for sAPE in rerun[i].split(",")[1:]]
-            sum = np.add(sum, value)
-
-        average_values = np.divide(sum, len(input_files))
-        writer.writerow([series_id] + list(average_values))
+    result.to_csv(output_path)

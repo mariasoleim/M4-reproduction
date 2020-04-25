@@ -13,7 +13,8 @@ m4Info_df=read.csv(paste0("../data/","M4-info.csv"))
 options(stringsAsFactors =FALSE)
 
 #directory with all the output files produced by the c++ code  we want to merge
-FOREC_DIR="../output/"  #do not end with separator
+forecast_folder = commandArgs(trailingOnly=TRUE)[1]
+FOREC_DIR=paste0("../output/", forecast_folder)  #do not end with separator
 
 LBACK=0  #shoud be as in the c++ code, LBACK>0 means backtesting
 SP="Hourly"
