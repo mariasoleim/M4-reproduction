@@ -13,7 +13,7 @@ get_average_each_series("../results/naive2/comparison-to-test-set/ASE.csv", "../
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/sMAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv")
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv", "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv")
 
-forecasts = ["069/malvik", "118/malvik", "245/malvik"]
+forecasts = ["069/malvik", "118/malvik", "245/malvik", "237/malvik", "118/skole-pc"]
 
 for forecast in forecasts:
     print(forecast)
@@ -28,9 +28,9 @@ for forecast in forecasts:
     for rerun in range(1, 6):
         print(rerun)
         rerun = str(rerun)
-        # forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
+        forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_test_set_path + "rerun-" + rerun + "/"
-        # compare_results_sAPE(forecast_path, test_set_path, result_folder + "/sAPE.csv")
+        compare_results_sAPE(forecast_path, test_set_path, result_folder + "/sAPE.csv")
         # compare_results_ASE(forecast_path, test_set_path, result_folder + "/ASE.csv")
 
         get_value_for_each_timestep(result_folder + "sAPE.csv", result_folder + "sAPE-resolution-timestep.csv")
@@ -68,7 +68,7 @@ for forecast in forecasts:
 
     sAPE_paths = [comparison_to_original_submission_path + "/rerun-" + str(rerun) + "/sAPE.csv" for rerun in range(1, 6)]
     # Calculate the average sAPE of the five reruns for every entry
-    get_average_values_for_all_reruns(comparison_to_original_submission_path + "/sAPE.csv", *sAPE_paths)
+    get_average_values_for_all_reruns(comparison_to_original_submission_path + "/sAPE.csv", sAPE_paths)
     # Calculate the average of the preceding result
     get_average(comparison_to_original_submission_path + "/sAPE.csv", comparison_to_original_submission_path + "/sAPE-average.txt")
     # # Sorts on resolution and calculate average sAPE for each time step
