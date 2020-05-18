@@ -1,4 +1,5 @@
 import csv
+import math
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -454,6 +455,8 @@ def get_average_values_for_all_reruns(output_path, input_files):
             for rerun in reruns:
                 values.append(rerun.loc[i, c])
             average = sum(values) / len(values)
+            if math.isnan(average):
+                average = "NA"
             result_df.at[i, c] = average
 
     # Write to csv
