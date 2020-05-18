@@ -13,12 +13,29 @@ get_average_each_series("../results/naive2/comparison-to-test-set/ASE.csv", "../
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/sMAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv")
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv", "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv")
 
-forecasts = ["069/malvik", "118/malvik", "245/malvik", "237/malvik", "118/skole-pc"]
+forecasts = ["036/malvik", "069/malvik", "118/malvik", "245/malvik", "237/malvik", "118/skole-pc", "260/malvik"]
+
+# Calculate OWA for the orinial submissions
+ids = list(dict.fromkeys([i.split("/")[0] for i in forecasts]))
+for method_id in ids:
+    original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
+    result_path = "../results/" + method_id + "/original"
+    result_folder = result_path + "comparison-to-test-set/"
+    compare_results_sAPE(original_submission_path, test_set_path, result_folder + "sAPE.csv")
+    compare_results_ASE(original_submission_path, test_set_path, result_folder + "ASE.csv")
+    get_average_each_series(result_folder + "sAPE.csv", result_folder + "sMAPE.csv")
+    get_average_each_series(result_folder + "ASE.csv", result_folder + "MASE.csv")
+    get_average_resolution_origin(result_folder + "sMAPE.csv", result_folder + "sMAPE-resolution-origin.csv")
+    get_average_resolution_origin(result_folder + "MASE.csv", result_folder + "MASE-resolution-origin.csv")
+    calculate_OWA(result_folder + "sMAPE-resolution-origin.csv", result_folder + "MASE-resolution-origin.csv",
+                  "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv",
+                  "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv",
+                  result_folder + "OWA.csv")
+
 
 for forecast in forecasts:
     print(forecast)
     method_id = forecast.split("/")[0]
-    original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
     result_path = "../results/" + forecast
     comparison_to_test_set_path = result_path + "/comparison-to-test-set/"
     comparison_to_original_submission_path = result_path + "/comparison-to-original-submission"
@@ -31,7 +48,7 @@ for forecast in forecasts:
         forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_test_set_path + "rerun-" + rerun + "/"
         compare_results_sAPE(forecast_path, test_set_path, result_folder + "/sAPE.csv")
-        # compare_results_ASE(forecast_path, test_set_path, result_folder + "/ASE.csv")
+        compare_results_ASE(forecast_path, test_set_path, result_folder + "/ASE.csv")
 
         get_value_for_each_timestep(result_folder + "sAPE.csv", result_folder + "sAPE-resolution-timestep.csv")
         get_value_for_each_timestep(result_folder + "ASE.csv", result_folder + "ASE-resolution-timestep.csv")
@@ -46,10 +63,12 @@ for forecast in forecasts:
         get_average_resolution_origin(result_folder + "MASE.csv", result_folder + "MASE-resolution-origin.csv")
 
         calculate_OWA(result_folder + "sMAPE-resolution-origin.csv", result_folder + "MASE-resolution-origin.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv",
-                      "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv", result_folder + "OWA-resolution-origin.csv")
+                      "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv", result_folder + "OWA.csv")
 
-    OWA_paths = [comparison_to_test_set_path + "rerun-" + str(rerun) + "/OWA-resolution-origin.csv" for rerun in range(1, 6)]
-    get_average_values_for_all_reruns(comparison_to_test_set_path + "OWA-average.csv", OWA_paths)
+    OWA_paths = [comparison_to_test_set_path + "rerun-" + str(rerun) + "/OWA.csv" for rerun in range(1, 6)]
+    get_average_values_for_all_reruns(comparison_to_test_set_path + "OWA.csv", OWA_paths)
+
+    compare_files("../results/" + method_id + "/original/comparison-to-test-set/OWA.csv", comparison_to_test_set_path + "OWA.csv", comparison_to_test_set_path + "OWA-difference.csv")
 
 
     # How equal are the reruns to the original submission?

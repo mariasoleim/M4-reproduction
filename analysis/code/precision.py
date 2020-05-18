@@ -173,12 +173,32 @@ def calculate_OWA(sMAPE_df, MASE_df, naive2_sMAPE_df, naive2_MASE_df, output_pat
 
             OWA = 0.5 * (relative_sMAPE + relative_MASE)
 
-            if math.isnan(OWA):
-                OWA = "NA"
-
             result.at[row, col] = OWA
 
     # Create folders if they don't already exists and create an output file
     folders_path = remove_file_from_path(output_path)
     create_path_if_not_exists(folders_path)
-    result.to_csv(output_path)
+    result.to_csv(output_path, na_rep="NA")
+
+
+def compare_files(file_1, file_2, output_path):
+    """
+    Takes in two files. For each entry, calculate the difference between the files: file_1[entry] - file_2[entry]
+    """
+    df_1 = pd.read_csv(file_1, index_col=0)
+    df_2 = pd.read_csv(file_2, index_col=0)
+
+    result = pd.DataFrame(index=resolutions + ["Total"], columns=origins + ["Total"])
+
+    for row in result.index.values:
+        for col in result.columns.values:
+            value_1 = df_1.loc[row, col]
+            value_2 = df_2.loc[row, col]
+            diff = value_1 - value_2
+            result.at[row, col] = diff
+
+    # Create folders if they don't already exists and create an output file
+    folders_path = remove_file_from_path(output_path)
+    create_path_if_not_exists(folders_path)
+    print(result)
+    result.to_csv(output_path, na_rep="NA")
