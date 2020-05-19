@@ -53,9 +53,6 @@ for forecast in forecasts:
         get_value_for_each_timestep(result_folder + "sAPE.csv", result_folder + "sAPE-resolution-timestep.csv")
         get_value_for_each_timestep(result_folder + "ASE.csv", result_folder + "ASE-resolution-timestep.csv")
 
-        resolution_timestep_graph(result_folder + "sAPE-resolution-timestep.csv", result_folder + "sAPE.png", "Average sAPE")
-        resolution_timestep_graph(result_folder + "ASE-resolution-timestep.csv", result_folder + "ASE.png", "Average ASE")
-
         get_average_each_series(result_folder + "sAPE.csv", result_folder + "sMAPE.csv")
         get_average_each_series(result_folder + "ASE.csv", result_folder + "MASE.csv")
 
@@ -64,6 +61,14 @@ for forecast in forecasts:
 
         calculate_OWA(result_folder + "sMAPE-resolution-origin.csv", result_folder + "MASE-resolution-origin.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv",
                       "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv", result_folder + "OWA.csv")
+
+    sAPE_paths = [comparison_to_test_set_path + "rerun-" + str(rerun) + "/sAPE-resolution-timestep.csv" for rerun in range(1, 6)]
+    get_average_values_for_all_reruns(comparison_to_test_set_path + "sAPE.csv", sAPE_paths)
+    resolution_timestep_graph(comparison_to_test_set_path + "sAPE.csv", comparison_to_test_set_path + "sAPE.png", "Average sAPE")
+
+    ASE_paths = [comparison_to_test_set_path + "rerun-" + str(rerun) + "/ASE-resolution-timestep.csv" for rerun in range(1, 6)]
+    get_average_values_for_all_reruns(comparison_to_test_set_path + "ASE.csv", ASE_paths)
+    resolution_timestep_graph(comparison_to_test_set_path + "ASE.csv", comparison_to_test_set_path + "ASE.png", "Average ASE")
 
     OWA_paths = [comparison_to_test_set_path + "rerun-" + str(rerun) + "/OWA.csv" for rerun in range(1, 6)]
     get_average_values_for_all_reruns(comparison_to_test_set_path + "OWA.csv", OWA_paths)
