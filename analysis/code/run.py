@@ -15,11 +15,11 @@ get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv
 
 forecasts = ["036/malvik", "069/malvik", "118/malvik", "245/malvik", "237/malvik", "118/skole-pc", "260/malvik"]
 
-# Calculate OWA for the orinial submissions
+# Calculate OWA for the original submissions
 ids = list(dict.fromkeys([i.split("/")[0] for i in forecasts]))
 for method_id in ids:
     original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
-    result_path = "../results/" + method_id + "/original"
+    result_path = "../results/" + method_id + "/original/"
     result_folder = result_path + "comparison-to-test-set/"
     compare_results_sAPE(original_submission_path, test_set_path, result_folder + "sAPE.csv")
     compare_results_ASE(original_submission_path, test_set_path, result_folder + "ASE.csv")
