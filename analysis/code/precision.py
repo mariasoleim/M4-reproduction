@@ -200,5 +200,4 @@ def compare_files(file_1, file_2, output_path):
     # Create folders if they don't already exists and create an output file
     folders_path = remove_file_from_path(output_path)
     create_path_if_not_exists(folders_path)
-    print(result)
     result.to_csv(output_path, na_rep="NA")
