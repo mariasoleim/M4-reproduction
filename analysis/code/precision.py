@@ -195,6 +195,8 @@ def compare_files(file_1, file_2, output_path):
             value_1 = df_1.loc[row, col]
             value_2 = df_2.loc[row, col]
             diff = value_1 - value_2
+            if not math.isnan(diff):
+                diff = "%.5f" % diff
             result.at[row, col] = diff
 
     # Create folders if they don't already exists and create an output file
