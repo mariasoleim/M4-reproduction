@@ -40,6 +40,7 @@ for forecast in forecasts:
     comparison_to_test_set_path = result_path + "/comparison-to-test-set/"
     comparison_to_original_submission_path = result_path + "/comparison-to-original-submission"
     variation_path = result_path + "/variation"
+    original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
 
     # How equal are the reruns to the test set?
     for rerun in range(1, 6):

@@ -195,10 +195,11 @@ def compare_files(file_1, file_2, output_path):
             value_1 = df_1.loc[row, col]
             value_2 = df_2.loc[row, col]
             diff = value_1 - value_2
+            if not math.isnan(diff):
+                diff = "%.5f" % diff
             result.at[row, col] = diff
 
     # Create folders if they don't already exists and create an output file
     folders_path = remove_file_from_path(output_path)
     create_path_if_not_exists(folders_path)
-    print(result)
     result.to_csv(output_path, na_rep="NA")
