@@ -1,6 +1,7 @@
 from helper import *
 import csv
 import math
+import matplotlib.pyplot as plt
 
 
 def sAPE(value_1, value_2):
@@ -195,10 +196,72 @@ def compare_files(file_1, file_2, output_path):
             value_1 = df_1.loc[row, col]
             value_2 = df_2.loc[row, col]
             diff = value_1 - value_2
+            if not math.isnan(diff):
+                diff = "%.5f" % diff
             result.at[row, col] = diff
 
     # Create folders if they don't already exists and create an output file
     folders_path = remove_file_from_path(output_path)
     create_path_if_not_exists(folders_path)
-    print(result)
     result.to_csv(output_path, na_rep="NA")
+
+
+def compare_original_and_rerun_OWA(methods, data, cut_axis=False):
+    """
+    Calculates the difference in OWA between a list of original submissions and reruns of the same methods. Display the results with a graph.
+    :param reruns: List of strings.. e.g. ["036/malvik", "069/malvik", "118/malvik"]
+    :param data: String. A resolution, origin or "All". E.g. "Yearly", "Finance" or "All"
+    :return:
+    """
+
+    original_OWAs = []
+    rerun_OWAs = []
+    method_ids = []
+
+    for reruns in methods:
+        method_id = reruns.split("/")[0]
+        if method_id not in method_ids:
+            method_ids.append(method_id)
+        else:
+            method_ids.append(method_id + "-2")
+        path_to_original = "../results/" + method_id + "/original/comparison-to-test-set/OWA.csv"
+        path_to_reruns = "../results/" + reruns + "/comparison-to-test-set/OWA.csv"
+
+        original_df = pd.read_csv(path_to_original, index_col=0)
+        reruns_df = pd.read_csv(path_to_reruns, index_col=0)
+
+        if data in resolutions:
+            resolution = data
+            origin = "Total"
+        elif data in origins:
+            resolution = "Total"
+            origin = data
+        elif data == "All":
+            resolution = "Total"
+            origin = "Total"
+        else:
+            raise Exception("Data should be a resolution, origin or 'All', but was " + data)
+
+        OWA_original = original_df.loc[resolution, origin]
+        OWA_reruns = reruns_df.loc[resolution, origin]
+
+        original_OWAs.append(OWA_original)
+        rerun_OWAs.append(OWA_reruns)
+
+    # Sort from lowest to highest original OWA
+    sorted_OWAs = [[x, y, z] for x, y, z in sorted(zip(original_OWAs, rerun_OWAs, method_ids))]
+    original_OWAs = [values[0] for values in sorted_OWAs]
+    rerun_OWAs = [values[1] for values in sorted_OWAs]
+    method_ids = [values[2] for values in sorted_OWAs]
+
+    plt.scatter(method_ids, original_OWAs, label="Original OWA")
+    plt.scatter(method_ids, rerun_OWAs, label="Reruns average OWA", marker="x")
+    if not cut_axis:
+        plt.ylim(0, max([max(original_OWAs), max(rerun_OWAs)]) * 1.2)
+        suffix = ""
+    else:
+        suffix = "-zoom"
+    plt.legend()
+    create_path_if_not_exists("../results/OWA-comparisons")
+    plt.savefig("../results/OWA-comparisons/OWA-" + data + suffix, bbox_inches='tight', pad_inches=0)
+    plt.close()

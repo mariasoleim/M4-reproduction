@@ -34,16 +34,15 @@ for method_id in ids:
 
 
 for forecast in forecasts:
-    print(forecast)
     method_id = forecast.split("/")[0]
     result_path = "../results/" + forecast
     comparison_to_test_set_path = result_path + "/comparison-to-test-set/"
     comparison_to_original_submission_path = result_path + "/comparison-to-original-submission"
     variation_path = result_path + "/variation"
+    original_submission_path = "../../forecasts/" + method_id + "/original/submission-" + method_id + ".csv"
 
     # How equal are the reruns to the test set?
     for rerun in range(1, 6):
-        print(rerun)
         rerun = str(rerun)
         forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_test_set_path + "rerun-" + rerun + "/"
@@ -106,3 +105,13 @@ for forecast in forecasts:
     get_average(variation_path + "/coefficient-of-variation.csv", variation_path + "/coefficient-of-variation-average.txt")
     get_value_for_each_timestep(variation_path + "/coefficient-of-variation.csv", variation_path + "/coefficient-of-variation-resolution-timestep.csv")
     resolution_timestep_graph(variation_path + "/coefficient-of-variation-resolution-timestep.csv", variation_path + "/coefficient-of-variation.png", "Average coefficient of variation")
+
+
+# Compare original OWA to reruns' OWAs
+cut_axis = [True, False]
+for ca in cut_axis:
+    for resolution in resolutions:
+        compare_original_and_rerun_OWA(forecasts, resolution, ca)
+    for origin in origins:
+        compare_original_and_rerun_OWA(forecasts, origin, ca)
+    compare_original_and_rerun_OWA(forecasts, "All", ca)

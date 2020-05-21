@@ -415,7 +415,13 @@ def resolution_timestep_graph(path, output_path, y_label):
     # For each resolution
     for resolution_values in reader:
         resolution = resolution_values[0]
-        values = [float(i) for i in resolution_values[1:]]
+        values = []
+        for i in resolution_values[1:]:
+            try:
+                value = float(i)
+            except ValueError:
+                value = math.nan
+            values.append(value)
 
         # Plot the graph for this resolution
         plt.plot(range(1, len(values) + 1), values, label=resolution)
@@ -423,7 +429,7 @@ def resolution_timestep_graph(path, output_path, y_label):
     plt.xlabel("Timestep after last observed value")
     plt.ylabel(y_label)
     plt.legend(loc='best')
-    plt.savefig(output_path)
+    plt.savefig(output_path, bboxinches='tight', padinches=0)
     plt.clf()
 
 
