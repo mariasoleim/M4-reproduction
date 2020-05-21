@@ -34,7 +34,6 @@ for method_id in ids:
 
 
 for forecast in forecasts:
-    print(forecast)
     method_id = forecast.split("/")[0]
     result_path = "../results/" + forecast
     comparison_to_test_set_path = result_path + "/comparison-to-test-set/"
@@ -44,7 +43,6 @@ for forecast in forecasts:
 
     # How equal are the reruns to the test set?
     for rerun in range(1, 6):
-        print(rerun)
         rerun = str(rerun)
         forecast_path = "../../forecasts/" + forecast + "/rerun-" + rerun + "/forecasts.csv"
         result_folder = comparison_to_test_set_path + "rerun-" + rerun + "/"
