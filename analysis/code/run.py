@@ -105,3 +105,13 @@ for forecast in forecasts:
     get_average(variation_path + "/coefficient-of-variation.csv", variation_path + "/coefficient-of-variation-average.txt")
     get_value_for_each_timestep(variation_path + "/coefficient-of-variation.csv", variation_path + "/coefficient-of-variation-resolution-timestep.csv")
     resolution_timestep_graph(variation_path + "/coefficient-of-variation-resolution-timestep.csv", variation_path + "/coefficient-of-variation.png", "Average coefficient of variation")
+
+
+# Compare original OWA to reruns' OWAs
+cut_axis = [True, False]
+for ca in cut_axis:
+    for resolution in resolutions:
+        compare_original_and_rerun_OWA(forecasts, resolution, ca)
+    for origin in origins:
+        compare_original_and_rerun_OWA(forecasts, origin, ca)
+    compare_original_and_rerun_OWA(forecasts, "All", ca)
