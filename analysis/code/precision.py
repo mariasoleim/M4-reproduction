@@ -263,5 +263,5 @@ def compare_original_and_rerun_OWA(methods, data, cut_axis=False):
         suffix = "-zoom"
     plt.legend()
     create_path_if_not_exists("../results/OWA-comparisons")
-    plt.savefig("../results/OWA-comparisons/OWA-" + data + suffix, bbox_inches='tight', pad_inches=0)
+    plt.savefig("../results/OWA-comparisons/OWA-" + data + suffix, bbox_inches='tight', pad_inches=0.01)
     plt.close()
