@@ -206,7 +206,7 @@ def compare_files(file_1, file_2, output_path):
     result.to_csv(output_path, na_rep="NA")
 
 
-def compare_original_and_rerun_OWA(methods, data, cut_axis=False):
+def compare_original_and_rerun_OWA(methods, data, cut_axis, output_path):
     """
     Calculates the difference in OWA between a list of original submissions and reruns of the same methods. Display the results with a graph.
     :param reruns: List of strings.. e.g. ["036/malvik", "069/malvik", "118/malvik"]
@@ -260,8 +260,12 @@ def compare_original_and_rerun_OWA(methods, data, cut_axis=False):
         plt.ylim(0, max([max(original_OWAs), max(rerun_OWAs)]) * 1.2)
         suffix = ""
     else:
-        suffix = "-zoom"
+        suffix = "-truncated"
     plt.legend()
-    create_path_if_not_exists("../results/OWA-comparisons")
-    plt.savefig("../results/OWA-comparisons/OWA-" + data + suffix, bbox_inches='tight', pad_inches=0.01)
+
+    # Create folders if they don't already exists and create an output file
+    folders_path = remove_file_from_path(output_path)
+    create_path_if_not_exists(folders_path)
+
+    plt.savefig(output_path + "-" + data + suffix, bbox_inches='tight', pad_inches=0.01)
     plt.close()

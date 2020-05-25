@@ -426,11 +426,11 @@ def resolution_timestep_graph(path, output_path, y_label):
         # Plot the graph for this resolution
         plt.plot(range(1, len(values) + 1), values, label=resolution)
 
-    plt.xlabel("Timestep after last observed value")
-    plt.ylabel(y_label)
-    plt.legend(loc='best')
-    plt.savefig(output_path, bboxinches='tight', padinches=0)
-    plt.clf()
+    # plt.xlabel("Timestep after last observed value")
+    # plt.ylabel(y_label)
+    plt.legend()
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0)
+    plt.close()
 
 
 def get_average_values_for_all_reruns(output_path, input_files):
