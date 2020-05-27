@@ -13,7 +13,7 @@ get_average_each_series("../results/naive2/comparison-to-test-set/ASE.csv", "../
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/sMAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv")
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv", "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv")
 
-forecasts = ["036/malvik", "069/malvik", "118/malvik", "245/malvik", "237/malvik", "118/skole-pc", "260/malvik"]
+forecasts = ["036/malvik", "039/malvik", "069/malvik", "118/malvik", "118/skole-pc", "237/malvik", "245/malvik", "260/malvik"]
 
 # Calculate OWA for the original submissions
 ids = list(dict.fromkeys([i.split("/")[0] for i in forecasts]))
@@ -108,10 +108,11 @@ for forecast in forecasts:
 
 
 # Compare original OWA to reruns' OWAs
+output_path = "../results/OWA-comparisons/OWA"
 cut_axis = [True, False]
 for ca in cut_axis:
     for resolution in resolutions:
-        compare_original_and_rerun_OWA(forecasts, resolution, ca)
+        compare_original_and_rerun_OWA(forecasts, resolution, ca, output_path)
     for origin in origins:
-        compare_original_and_rerun_OWA(forecasts, origin, ca)
-    compare_original_and_rerun_OWA(forecasts, "All", ca)
+        compare_original_and_rerun_OWA(forecasts, origin, ca, output_path)
+    compare_original_and_rerun_OWA(forecasts, "All", ca, output_path)
