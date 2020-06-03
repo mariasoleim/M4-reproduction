@@ -260,6 +260,56 @@ def get_average_each_series(path, output_path):
         writer.writerow([series_id, average])
 
 
+def get_share_less_than(path, threshold, output_path):
+    """
+    Takes in a path to a file with one value for each series, such as the one created in get_average_each_series().
+    Calculated the share of the values that are below or equal to a given threshold
+    :param path:
+    :param threshold:
+    :param output_path: String of the form "path/to/save/share-less-than-". The threshold will be appended to the filename in addition to a .txt suffix.
+    :return:
+    """
+    total = 0
+    less_than_threshold = 0
+
+    reader = csv.reader(open(path))
+    next(reader)  # Skip the header line
+    for series in reader:
+        total += 1
+        value = series[1]
+        try:
+            value = float(value)
+        except ValueError:
+            if value == "NA":
+                continue
+            raise Exception("The value %s could not be converted to float" % value)
+        if value <= threshold:
+            less_than_threshold += 1
+
+    share = float(less_than_threshold) / total
+
+    output_file = open(output_path + str(threshold) + ".txt", "w")
+    output_file.write(str(share))
+
+
+def get_average_of_text_files(paths, output_path):
+    """
+    Given a list of paths to text files containing only one single number, such as the file produced by get_share_less_than(), calculates the average of those values.
+    :param paths: List of paths
+    :param output_path: Writes the result to this path
+    :return:
+    """
+    values_to_average = []
+
+    for path in paths:
+        values_to_average.append(float(open(path, "r").read()))
+
+    average = float(sum(values_to_average)) / len(values_to_average)
+    rounded = round(average, 2)
+
+    open(output_path, "w").write(str(rounded))
+
+
 def get_average_resolution_origin(path, output_path):
     """
     Takes in a path to a file with one value for each series such as the one created in get_average_each_series().

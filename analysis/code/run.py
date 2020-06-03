@@ -13,7 +13,7 @@ get_average_each_series("../results/naive2/comparison-to-test-set/ASE.csv", "../
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/sMAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv")
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv", "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv")
 
-forecasts = ["036/malvik", "036/skole-pc", "039/malvik", "069/malvik", "078/malvik", "118/malvik", "118/skole-pc", "237/malvik", "245/malvik", "260/malvik", "260/skole-pc"]
+forecasts = ["036/malvik", "036/skole-pc", "039/malvik", "039/skole-pc", "069/malvik", "078/malvik", "118/malvik", "118/skole-pc", "237/malvik", "245/malvik", "260/malvik", "260/skole-pc"]
 
 # Calculate OWA for the original submissions
 ids = list(dict.fromkeys([i.split("/")[0] for i in forecasts]))
@@ -89,6 +89,11 @@ for forecast in forecasts:
         get_value_for_each_timestep(result_folder + "/sAPE.csv", result_folder + "/sAPE-resolution-timestep.csv")
         # Creates a graph of the result
         resolution_timestep_graph(result_folder + "/sAPE-resolution-timestep.csv", result_folder + "/sAPE.png", "Average sAPE")
+        # Calculates the sMAPE for each series
+        get_average_each_series(result_folder + "/sAPE.csv", result_folder + "/sMAPE.csv")
+        # Calculates the share of the time series that has an sMAPE less than some number
+        get_share_less_than(result_folder + "/sMAPE.csv", 0, result_folder + "/sMAPE-less-than-")
+        get_share_less_than(result_folder + "/sMAPE.csv", 0.00001, result_folder + "/sMAPE-less-than-")
 
     sAPE_paths = [comparison_to_original_submission_path + "/rerun-" + str(rerun) + "/sAPE.csv" for rerun in range(1, 6)]
     # Calculate the average sAPE of the five reruns for every entry
@@ -99,6 +104,11 @@ for forecast in forecasts:
     get_value_for_each_timestep(comparison_to_original_submission_path + "/sAPE.csv", comparison_to_original_submission_path + "/sAPE-resolution-timestep.csv")
     # Creates a graph of the preceding result
     resolution_timestep_graph(comparison_to_original_submission_path + "/sAPE-resolution-timestep.csv", comparison_to_original_submission_path + "/sAPE.png", "Average sAPE")
+    # Calculates the share of the time series that has an sMAPE less than some number
+    share_less_than_0_paths = [comparison_to_original_submission_path + "/rerun-" + str(rerun) + "/sMAPE-less-than-0.txt" for rerun in range(1, 6)]
+    share_less_than_almost_zero_paths = [comparison_to_original_submission_path + "/rerun-" + str(rerun) + "/sMAPE-less-than-1e-05.txt" for rerun in range(1, 6)]
+    get_average_of_text_files(share_less_than_0_paths, comparison_to_original_submission_path + "/share-less-than-0.txt")
+    get_average_of_text_files(share_less_than_almost_zero_paths, comparison_to_original_submission_path + "/share-less-than-1e-05.txt")
 
     # How equal are the reruns to each others?
     reruns = ["../../forecasts/" + forecast + "/rerun-" + str(rerun) + "/forecasts.csv" for rerun in range(1, 6)]
