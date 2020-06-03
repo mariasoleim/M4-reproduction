@@ -13,7 +13,7 @@ get_average_each_series("../results/naive2/comparison-to-test-set/ASE.csv", "../
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/sMAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv")
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv", "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv")
 
-forecasts = ["036/malvik", "036/skole-pc", "039/malvik", "039/skole-pc", "069/malvik", "078/malvik", "118/malvik", "118/skole-pc", "237/malvik", "245/malvik", "260/malvik", "260/skole-pc"]
+forecasts = ["036/computer-a", "036/computer-b", "039/computer-a", "039/computer-b", "069/computer-a", "078/computer-a", "118/computer-a", "118/computer-b", "237/computer-a", "245/computer-a", "260/computer-a", "260/computer-b"]
 
 # Calculate OWA for the original submissions
 ids = list(dict.fromkeys([i.split("/")[0] for i in forecasts]))
@@ -129,8 +129,8 @@ for ca in cut_axis:
     compare_original_and_rerun_OWA(forecasts, "All", ca, output_path)
 
 
-paths_a_118 = ["../../forecasts/118/malvik/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
-paths_b_118 = ["../../forecasts/118/skole-pc/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
+paths_a_118 = ["../../forecasts/118/computer-a/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
+paths_b_118 = ["../../forecasts/118/computer-b/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
 result_path = "../results/" + str(118) + "/computer-comparison/"
 
 # compare_computers(paths_a_118, paths_b_118, result_path + "DRMSD.csv")

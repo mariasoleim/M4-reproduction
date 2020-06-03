@@ -209,7 +209,7 @@ def compare_files(file_1, file_2, output_path):
 def compare_original_and_rerun_OWA(methods, data, cut_axis, output_path):
     """
     Calculates the difference in OWA between a list of original submissions and reruns of the same methods. Display the results with a graph.
-    :param reruns: List of strings.. e.g. ["036/malvik", "069/malvik", "118/malvik"]
+    :param reruns: List of strings.. e.g. ["036/computer-a", "069/computer-a", "118/computer-a"]
     :param data: String. A resolution, origin or "All". E.g. "Yearly", "Finance" or "All"
     :return:
     """
