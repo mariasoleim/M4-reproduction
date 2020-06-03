@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
+from matplotlib import collections as matcoll
 
 resolutions = ["Yearly", "Quarterly", "Monthly", "Weekly", "Daily", "Hourly"]
 origins = ["Demographic", "Finance", "Industry", "Macro", "Micro", "Other"]
@@ -467,3 +468,45 @@ def get_average_values_for_all_reruns(output_path, input_files):
 
     # Write to csv
     result_df.to_csv(output_path)
+
+
+def scatterplot(path, output_path):
+    """
+    Creates a scatter plot from a csv file such as the one produced by get_average_resolution_origin().
+    Scatter each resoliution, origin and the total.
+    :param path:
+    :param output_path:
+    :return:
+    """
+    df = pd.read_csv(path, index_col=0)
+
+    resolutions = df.index.values.tolist()
+    origins = df.columns.values.tolist()
+    resolutions.remove("Total")
+    origins.remove("Total")
+
+    x = []
+    y = []
+
+    for resolution in resolutions:
+        x.append(resolution)
+        y.append(df.loc[resolution, "Total"])
+    for origin in origins:
+        x.append(origin)
+        y.append(df.loc["Total", origin])
+    x.append("Total")
+    y.append(df.loc["Total", "Total"])
+
+    lines = []
+    for i in range(len(x)):
+        pair = [(i, 0), (i, y[i])]
+        lines.append(pair)
+
+    linecoll = matcoll.LineCollection(lines)
+    fig, ax = plt.subplots()
+    ax.add_collection(linecoll)
+
+    plt.scatter(x, y)
+    plt.xticks(rotation=70)
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0.01)
+    plt.close()
