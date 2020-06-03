@@ -91,6 +91,8 @@ for forecast in forecasts:
         resolution_timestep_graph(result_folder + "/sAPE-resolution-timestep.csv", result_folder + "/sAPE.png", "Average sAPE")
         # Calculates the sMAPE for each series
         get_average_each_series(result_folder + "/sAPE.csv", result_folder + "/sMAPE.csv")
+        # Finds the average of all sMAPEs and writes the average to a text file
+        get_average(result_folder + "/sMAPE.csv", result_folder + "/sMAPE-average.txt")
         # Calculates the share of the time series that has an sMAPE less than some number
         get_share_less_than(result_folder + "/sMAPE.csv", 0, result_folder + "/sMAPE-less-than-")
         get_share_less_than(result_folder + "/sMAPE.csv", 0.00001, result_folder + "/sMAPE-less-than-")
@@ -109,6 +111,9 @@ for forecast in forecasts:
     share_less_than_almost_zero_paths = [comparison_to_original_submission_path + "/rerun-" + str(rerun) + "/sMAPE-less-than-1e-05.txt" for rerun in range(1, 6)]
     get_average_of_text_files(share_less_than_0_paths, comparison_to_original_submission_path + "/share-less-than-0.txt")
     get_average_of_text_files(share_less_than_almost_zero_paths, comparison_to_original_submission_path + "/share-less-than-1e-05.txt")
+    sMAPE_paths = [comparison_to_original_submission_path + "/rerun-" + str(rerun) + "/sMAPE-average.txt" for rerun in range(1, 6)]
+    get_average_of_text_files(sMAPE_paths, comparison_to_original_submission_path + "/sMAPE-average.txt")
+
 
     # How equal are the reruns to each others?
     reruns = ["../../forecasts/" + forecast + "/rerun-" + str(rerun) + "/forecasts.csv" for rerun in range(1, 6)]
@@ -140,3 +145,6 @@ get_average(result_path + "DRMSD.csv", result_path + "DRMSD-average.txt")
 get_average_each_series(result_path + "DRMSD.csv", result_path + "DRMSD-each-series.csv")  # Kanskje kalle det noe annet når det er gjennomsnitt for en series? ASE blir MASE og sAPE blir sMAPE
 get_average_resolution_origin(result_path + "DRMSD-each-series.csv", result_path + "DRMSD-resolution-origin.csv")
 scatterplot(result_path + "DRMSD-resolution-origin.csv", result_path + "DRMSD-scatter.png")
+
+# Scatter plot of the average sMAPE for reruns of the same method on the same computer
+scatterplot_from_paths("../results/", forecasts, "/comparison-to-original-submission/sMAPE-average.txt", "../results/sMAPE-between-original.png")

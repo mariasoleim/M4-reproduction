@@ -219,7 +219,6 @@ def get_average(path, output_path):
     average = sum / number_of_values
 
     output_file = open(output_path, "w")
-    output_file.write("Average: ")
     output_file.write(str(average))
 
 
@@ -559,4 +558,38 @@ def scatterplot(path, output_path):
     plt.scatter(x, y)
     plt.xticks(rotation=70)
     plt.savefig(output_path, bbox_inches='tight', pad_inches=0.01)
+    plt.close()
+
+
+def scatterplot_from_paths(prefix, list_of_ids, suffix, output_path):
+    """
+    Creates a scatter plt from the values found in different paths
+    :param prefix: String. E.g. "../results/"
+    :param list_of_ids: List of strings with methods. E.g. ["036/computer-a", "039/computer-b"]
+    :param suffix: String. E.g. "/comparison-to-original-submission/sMAPE-average.txt"
+    :param output_path: String. Where to save the plot.
+    :return:
+    """
+    x = []
+    y = []
+
+    for method in list_of_ids:
+        path = prefix + method + suffix
+        value = float(open(path, "r").read())
+        method_name = method.split("/")[0] + "-" + method.split("/")[1][-1].upper()
+        x.append(method_name)
+        y.append(value)
+
+    lines = []
+    for i in range(len(x)):
+        pair = [(i, 0), (i, y[i])]
+        lines.append(pair)
+
+    linecoll = matcoll.LineCollection(lines)
+    fig, ax = plt.subplots()
+    ax.add_collection(linecoll)
+
+    plt.scatter(x, y)
+    plt.xticks(rotation=70)
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0.03)
     plt.close()
