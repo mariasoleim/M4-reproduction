@@ -13,7 +13,7 @@ get_average_each_series("../results/naive2/comparison-to-test-set/ASE.csv", "../
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/sMAPE.csv", "../results/naive2/comparison-to-test-set/sMAPE-resolution-origin.csv")
 get_average_resolution_origin("../results/naive2/comparison-to-test-set/MASE.csv", "../results/naive2/comparison-to-test-set/MASE-resolution-origin.csv")
 
-forecasts = ["036/malvik", "039/malvik", "069/malvik", "118/malvik", "118/skole-pc", "237/malvik", "245/malvik", "260/malvik"]
+forecasts = ["036/malvik", "036/skole-pc", "039/malvik", "069/malvik", "078/malvik", "118/malvik", "118/skole-pc", "237/malvik", "245/malvik", "260/malvik", "260/skole-pc"]
 
 # Calculate OWA for the original submissions
 ids = list(dict.fromkeys([i.split("/")[0] for i in forecasts]))
@@ -34,6 +34,7 @@ for method_id in ids:
 
 
 for forecast in forecasts:
+    print(forecast)
     method_id = forecast.split("/")[0]
     result_path = "../results/" + forecast
     comparison_to_test_set_path = result_path + "/comparison-to-test-set/"
@@ -116,3 +117,16 @@ for ca in cut_axis:
     for origin in origins:
         compare_original_and_rerun_OWA(forecasts, origin, ca, output_path)
     compare_original_and_rerun_OWA(forecasts, "All", ca, output_path)
+
+
+paths_a_118 = ["../../forecasts/118/malvik/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
+paths_b_118 = ["../../forecasts/118/skole-pc/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
+result_path = "../results/" + str(118) + "/computer-comparison/"
+
+# compare_computers(paths_a_118, paths_b_118, result_path + "DRMSD.csv")
+get_value_for_each_timestep(result_path + "DRMSD.csv", result_path + "DRMSD-rt.csv")
+resolution_timestep_graph(result_path + "DRMSD-rt.csv", result_path + "DRMSD-rt.png", "DRMSD")
+get_average(result_path + "DRMSD.csv", result_path + "DRMSD-average.txt")
+get_average_each_series(result_path + "DRMSD.csv", result_path + "DRMSD-each-series.csv")  # Kanskje kalle det noe annet når det er gjennomsnitt for en series? ASE blir MASE og sAPE blir sMAPE
+get_average_resolution_origin(result_path + "DRMSD-each-series.csv", result_path + "DRMSD-resolution-origin.csv")
+scatterplot(result_path + "DRMSD-resolution-origin.csv", result_path + "DRMSD-scatter.png")
