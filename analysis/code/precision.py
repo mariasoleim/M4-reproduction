@@ -220,10 +220,8 @@ def compare_original_and_rerun_OWA(methods, data, cut_axis, output_path):
 
     for reruns in methods:
         method_id = reruns.split("/")[0]
-        if method_id not in method_ids:
-            method_ids.append(method_id)
-        else:
-            method_ids.append(method_id + "-2")
+        computer_letter = reruns.split("/")[1][-1].upper()
+        method_ids.append(method_id + "-" + computer_letter)
         path_to_original = "../results/" + method_id + "/original/comparison-to-test-set/OWA.csv"
         path_to_reruns = "../results/" + reruns + "/comparison-to-test-set/OWA.csv"
 
@@ -256,6 +254,7 @@ def compare_original_and_rerun_OWA(methods, data, cut_axis, output_path):
 
     plt.scatter(method_ids, original_OWAs, label="Original OWA")
     plt.scatter(method_ids, rerun_OWAs, label="Reruns average OWA", marker="x")
+    plt.xticks(rotation=70)
     if not cut_axis:
         plt.ylim(0, max([max(original_OWAs), max(rerun_OWAs)]) * 1.2)
         suffix = ""
@@ -267,5 +266,5 @@ def compare_original_and_rerun_OWA(methods, data, cut_axis, output_path):
     folders_path = remove_file_from_path(output_path)
     create_path_if_not_exists(folders_path)
 
-    plt.savefig(output_path + "-" + data + suffix, bbox_inches='tight', pad_inches=0.01)
+    plt.savefig(output_path + "-" + data + suffix, bbox_inches='tight', pad_inches=0.03)
     plt.close()

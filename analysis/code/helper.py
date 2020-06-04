@@ -557,7 +557,7 @@ def scatterplot(path, output_path):
 
     plt.scatter(x, y)
     plt.xticks(rotation=70)
-    plt.savefig(output_path, bbox_inches='tight', pad_inches=0.01)
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0.03)
     plt.close()
 
 
