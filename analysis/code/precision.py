@@ -252,14 +252,15 @@ def compare_original_and_rerun_OWA(methods, data, cut_axis, output_path):
     rerun_OWAs = [values[1] for values in sorted_OWAs]
     method_ids = [values[2] for values in sorted_OWAs]
 
-    plt.scatter(method_ids, original_OWAs, label="Original OWA")
-    plt.scatter(method_ids, rerun_OWAs, label="Reruns average OWA", marker="x")
+    plt.scatter(method_ids, original_OWAs, label="Original submission")
+    plt.scatter(method_ids, rerun_OWAs, label="Average of reruns", marker="x")
     plt.xticks(rotation=70)
     if not cut_axis:
         plt.ylim(0, max([max(original_OWAs), max(rerun_OWAs)]) * 1.2)
         suffix = ""
     else:
         suffix = "-truncated"
+    plt.ylabel("OWA")
     plt.legend()
 
     # Create folders if they don't already exists and create an output file

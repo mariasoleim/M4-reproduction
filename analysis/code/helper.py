@@ -488,8 +488,8 @@ def resolution_timestep_graph(path, output_path, y_label):
         # Plot the graph for this resolution
         plt.plot(range(1, len(values) + 1), values, label=resolution)
 
-    # plt.xlabel("Timestep after last observed value")
-    # plt.ylabel(y_label)
+    plt.xlabel("Timestep after last observed value")
+    plt.ylabel(y_label)
     plt.legend()
     plt.savefig(output_path, bbox_inches='tight', pad_inches=0)
     plt.close()
@@ -531,7 +531,7 @@ def get_average_values_for_all_reruns(output_path, input_files):
     result_df.to_csv(output_path)
 
 
-def scatterplot(path, output_path):
+def scatterplot(path, output_path, ylabel):
     """
     Creates a scatter plot from a csv file such as the one produced by get_average_resolution_origin().
     Scatter each resoliution, origin and the total.
@@ -570,11 +570,12 @@ def scatterplot(path, output_path):
     plt.scatter(x, y)
     plt.xticks(rotation=70)
     plt.ylim(0, max(y) * 1.2)
+    plt.ylabel(ylabel)
     plt.savefig(output_path, bbox_inches='tight', pad_inches=0.03)
     plt.close()
 
 
-def scatterplot_from_paths(prefix, list_of_ids, suffix, output_path):
+def scatterplot_from_paths(prefix, list_of_ids, suffix, output_path, ylabel):
     """
     Creates a scatter plt from the values found in different paths
     :param prefix: String. E.g. "../results/"
@@ -604,5 +605,6 @@ def scatterplot_from_paths(prefix, list_of_ids, suffix, output_path):
 
     plt.scatter(x, y)
     plt.xticks(rotation=70)
+    plt.ylabel(ylabel)
     plt.savefig(output_path, bbox_inches='tight', pad_inches=0.03)
     plt.close()

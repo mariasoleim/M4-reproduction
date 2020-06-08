@@ -151,10 +151,10 @@ for id in ids:
 
     if open(average_path, "r").read() != "NA":
         get_value_for_each_timestep(result_path + "DRMSD.csv", result_path + "DRMSD-rt.csv")
-        resolution_timestep_graph(result_path + "DRMSD-rt.csv", result_path + "DRMSD-rt.png", "DRMSD")
+        resolution_timestep_graph(result_path + "DRMSD-rt.csv", result_path + "DRMSD-rt.png", "Average DRMSD")
         get_average_each_series(result_path + "DRMSD.csv", result_path + "DRMSD-each-series.csv")
         get_average_resolution_origin(result_path + "DRMSD-each-series.csv", result_path + "DRMSD-resolution-origin.csv")
-        scatterplot(result_path + "DRMSD-resolution-origin.csv", result_path + "DRMSD-scatter.png")
+        scatterplot(result_path + "DRMSD-resolution-origin.csv", result_path + "DRMSD-scatter.png", "DRMSD")
 
     compare_computers(paths_a, paths_b, result_path + "PD.csv", percentage_difference)
     average_path = result_path + "PD-average.txt"
@@ -162,12 +162,12 @@ for id in ids:
 
     if open(average_path, "r").read() != "NA":
         get_value_for_each_timestep(result_path + "PD.csv", result_path + "PD-rt.csv")
-        resolution_timestep_graph(result_path + "PD-rt.csv", result_path + "PD-rt.png", "PD")
+        resolution_timestep_graph(result_path + "PD-rt.csv", result_path + "PD-rt.png", "Average PD")
         get_average_each_series(result_path + "PD.csv", result_path + "PD-each-series.csv")
         get_average_resolution_origin(result_path + "PD-each-series.csv",
                                       result_path + "PD-resolution-origin.csv")
-        scatterplot(result_path + "PD-resolution-origin.csv", result_path + "PD-scatter.png")
+        scatterplot(result_path + "PD-resolution-origin.csv", result_path + "PD-scatter.png", "PD")
 
 
 # Scatter plot of the average sMAPE for reruns of the same method on the same computer
-scatterplot_from_paths("../results/", forecasts, "/comparison-to-original-submission/sMAPE-average.txt", "../results/sMAPE-between-original.png")
+scatterplot_from_paths("../results/", forecasts, "/comparison-to-original-submission/sMAPE-average.txt", "../results/sMAPE-between-original.png", "sMAPE")
