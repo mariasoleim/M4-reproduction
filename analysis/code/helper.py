@@ -216,7 +216,10 @@ def get_average(path, output_path):
             sum += value
             number_of_values += 1
 
-    average = sum / number_of_values
+    try:
+        average = sum / number_of_values
+    except ZeroDivisionError:
+        average = "NA"
 
     output_file = open(output_path, "w")
     output_file.write(str(average))
@@ -358,7 +361,10 @@ def get_average_resolution_origin(path, output_path):
         values = []
         for origin in origins:
             values = values + all_values.loc[resolution, origin]
-        average = sum(values) / len(values)
+        try:
+            average = sum(values) / len(values)
+        except ZeroDivisionError:
+            average = "NA"
         result.at[resolution, "Total"] = average
 
     # For all origins, the average value for that resolution is calculated and written to the result
@@ -366,7 +372,10 @@ def get_average_resolution_origin(path, output_path):
         values = []
         for resolution in resolutions:
             values = values + all_values.loc[resolution, origin]
-        average = sum(values) / len(values)
+        try:
+            average = sum(values) / len(values)
+        except ZeroDivisionError:
+            average = "NA"
         result.at["Total", origin] = average
 
     # The average of all values is calculated and written to the result
@@ -374,7 +383,10 @@ def get_average_resolution_origin(path, output_path):
     for resolution in resolutions:
         for origin in origins:
             values = values + all_values.loc[resolution, origin]
-    average = sum(values) / len(values)
+    try:
+        average = sum(values) / len(values)
+    except ZeroDivisionError:
+        average = "NA"
     result.at["Total", "Total"] = average
 
     # Write the final result to file
@@ -557,6 +569,7 @@ def scatterplot(path, output_path):
 
     plt.scatter(x, y)
     plt.xticks(rotation=70)
+    plt.ylim(0, max(y) * 1.2)
     plt.savefig(output_path, bbox_inches='tight', pad_inches=0.03)
     plt.close()
 

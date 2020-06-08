@@ -89,11 +89,30 @@ def DRMSD(values_a, values_b):
         DRMSD_value = "NA"
     else:
         DRMSD_value = diff**2 / (mean_mean * mean_sd)
-    DRMSD_value = float("%.5f" % DRMSD_value)
+        DRMSD_value = float("%.5f" % DRMSD_value)
     return DRMSD_value
 
 
-def compare_computers(input_files_a, input_files_b, output_path):
+def percentage_difference(values_a, values_b):
+    """
+    Takes in two groups of values. Calculates the percentage difference between the means of the two groups.
+    :param values_a: List of floats.
+    :param values_b: List of floats.
+    :return: Float
+    """
+    mean_a = mean(values_a)
+    mean_b = mean(values_b)
+    diff = abs(mean_a - mean_b)
+    mean_mean = mean([mean_a, mean_b])
+    percentage_diff = diff / mean_mean
+    if not math.isnan(percentage_diff):
+        percentage_diff = float("%.5f" % percentage_diff)
+    else:
+        percentage_diff = "NA"
+    return percentage_diff
+
+
+def compare_computers(input_files_a, input_files_b, output_path, comparison_function):
     """"
     Given two sets of files containing values (for instance forecasts), creates a new file giving the DRMSD error of those sets.
     :param input_files_a: List of strings. Each element in the list is a string with a path to a csv file containing values (for instance sAPE values) for all timesteps and all series between two
@@ -127,8 +146,12 @@ def compare_computers(input_files_a, input_files_b, output_path):
                 values_a.append(rerun.loc[i, c])
             for rerun in reruns_b:
                 values_b.append(rerun.loc[i, c])
-            DRMSD_value = DRMSD(values_a, values_b)
-            result_df.at[i, c] = DRMSD_value
+            measure = comparison_function(values_a, values_b)
+            result_df.at[i, c] = measure
+
+    # Ensures that the folders to were the result is going to be saved exists
+    path_without_file = remove_file_from_path(output_path)
+    create_path_if_not_exists(path_without_file)
 
     # Write to csv
-    result_df.to_csv(output_path)
+    result_df.to_csv(output_path, na_rep="NA")

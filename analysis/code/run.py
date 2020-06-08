@@ -133,18 +133,41 @@ for ca in cut_axis:
         compare_original_and_rerun_OWA(forecasts, origin, ca, output_path)
     compare_original_and_rerun_OWA(forecasts, "All", ca, output_path)
 
+# Find all the methods that are run on both computers
+ids = [forecast.split("/")[0] for forecast in forecasts]
+ids = set(i for i in ids if ids.count(i) == 2)
 
-paths_a_118 = ["../../forecasts/118/computer-a/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
-paths_b_118 = ["../../forecasts/118/computer-b/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
-result_path = "../results/" + str(118) + "/computer-comparison/"
+# Calculate DRMSD and PD for methods that are run on both computers
+for id in ids:
+    print(id)
 
-# compare_computers(paths_a_118, paths_b_118, result_path + "DRMSD.csv")
-get_value_for_each_timestep(result_path + "DRMSD.csv", result_path + "DRMSD-rt.csv")
-resolution_timestep_graph(result_path + "DRMSD-rt.csv", result_path + "DRMSD-rt.png", "DRMSD")
-get_average(result_path + "DRMSD.csv", result_path + "DRMSD-average.txt")
-get_average_each_series(result_path + "DRMSD.csv", result_path + "DRMSD-each-series.csv")  # Kanskje kalle det noe annet når det er gjennomsnitt for en series? ASE blir MASE og sAPE blir sMAPE
-get_average_resolution_origin(result_path + "DRMSD-each-series.csv", result_path + "DRMSD-resolution-origin.csv")
-scatterplot(result_path + "DRMSD-resolution-origin.csv", result_path + "DRMSD-scatter.png")
+    paths_a = ["../../forecasts/" + id + "/computer-a/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
+    paths_b = ["../../forecasts/" + id + "/computer-b/rerun-" + str(i) + "/forecasts.csv" for i in range(1, 6)]
+    result_path = "../results/" + id + "/computer-comparison/"
+
+    compare_computers(paths_a, paths_b, result_path + "DRMSD.csv", DRMSD)
+    average_path = result_path + "DRMSD-average.txt"
+    get_average(result_path + "DRMSD.csv", average_path)
+
+    if open(average_path, "r").read() != "NA":
+        get_value_for_each_timestep(result_path + "DRMSD.csv", result_path + "DRMSD-rt.csv")
+        resolution_timestep_graph(result_path + "DRMSD-rt.csv", result_path + "DRMSD-rt.png", "DRMSD")
+        get_average_each_series(result_path + "DRMSD.csv", result_path + "DRMSD-each-series.csv")
+        get_average_resolution_origin(result_path + "DRMSD-each-series.csv", result_path + "DRMSD-resolution-origin.csv")
+        scatterplot(result_path + "DRMSD-resolution-origin.csv", result_path + "DRMSD-scatter.png")
+
+    compare_computers(paths_a, paths_b, result_path + "PD.csv", percentage_difference)
+    average_path = result_path + "PD-average.txt"
+    get_average(result_path + "PD.csv", average_path)
+
+    if open(average_path, "r").read() != "NA":
+        get_value_for_each_timestep(result_path + "PD.csv", result_path + "PD-rt.csv")
+        resolution_timestep_graph(result_path + "PD-rt.csv", result_path + "PD-rt.png", "PD")
+        get_average_each_series(result_path + "PD.csv", result_path + "PD-each-series.csv")
+        get_average_resolution_origin(result_path + "PD-each-series.csv",
+                                      result_path + "PD-resolution-origin.csv")
+        scatterplot(result_path + "PD-resolution-origin.csv", result_path + "PD-scatter.png")
+
 
 # Scatter plot of the average sMAPE for reruns of the same method on the same computer
 scatterplot_from_paths("../results/", forecasts, "/comparison-to-original-submission/sMAPE-average.txt", "../results/sMAPE-between-original.png")
