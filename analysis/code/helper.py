@@ -491,7 +491,7 @@ def resolution_timestep_graph(path, output_path, y_label):
     plt.xlabel("Timestep after last observed value")
     plt.ylabel(y_label)
     plt.legend()
-    plt.savefig(output_path, bbox_inches='tight', pad_inches=0)
+    plt.savefig(output_path, bbox_inches='tight', pad_inches=0.03)
     plt.close()
 
 

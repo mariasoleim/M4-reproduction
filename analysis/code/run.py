@@ -102,7 +102,7 @@ for forecast in forecasts:
     get_average_values_for_all_reruns(comparison_to_original_submission_path + "/sAPE.csv", sAPE_paths)
     # Calculate the average of the preceding result
     get_average(comparison_to_original_submission_path + "/sAPE.csv", comparison_to_original_submission_path + "/sAPE-average.txt")
-    # # Sorts on resolution and calculate average sAPE for each time step
+    # Sorts on resolution and calculate average sAPE for each time step
     get_value_for_each_timestep(comparison_to_original_submission_path + "/sAPE.csv", comparison_to_original_submission_path + "/sAPE-resolution-timestep.csv")
     # Creates a graph of the preceding result
     resolution_timestep_graph(comparison_to_original_submission_path + "/sAPE-resolution-timestep.csv", comparison_to_original_submission_path + "/sAPE.png", "Average sAPE")
